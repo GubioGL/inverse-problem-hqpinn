@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  OVERLEAF_PROJECT_ID: 6ad4df833716c9db1f4aabee
+  OVERLEAF_PROJECT_ID: 6ad2cf866b34110796f43087
 
 jobs:
   sync:

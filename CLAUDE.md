@@ -13,7 +13,7 @@ the paper are in English. Companion repo: GubioGL/forward-problem-hqpinn (same `
 - Figures: always write to `paper/figures/` as PDF via `paths.save_figure(fig, name)`. Never commit PNGs.
 
 ## Paper / Overleaf
-- `paper/` is synced two-way with Overleaf project `6ad4df833716c9db1f4aabee` by
+- `paper/` is synced two-way with Overleaf project `6ad2cf866b34110796f43087` by
   `.github/workflows/overleaf-sync.yml` (script: `.github/scripts/overleaf_sync.sh`, state in
   `.github/overleaf-sync-state` — do not edit by hand).
 - To change the paper: edit `paper/` and push to `main`; the workflow pushes to Overleaf.
