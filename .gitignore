@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+env/
+*.env
+*.dev
+*.so
+
+# Kept on your machine only (IBM Quantum helpers / credentials); see README
+src/quantum_hardware/
+quantum_hardware/
+tmp/
+
+# Images: figures are committed as PDF. PNGs are local previews.
+# (PNGs uploaded in Overleaf are still kept: the sync adds paper/ with --force.)
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# LaTeX build products (Overleaf compiles the paper itself)
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/main.pdf
+paper/*Notes.bib
+
+# Per-epoch loss histories of the big sweeps (about 4 GB). They live in GubioGL/CBPF-Geral;
+# data/fetch_full_histories.sh brings them back. Final values: histories_summary.csv in each folder.
+data/Inverso/classical_inverse/**/losshist_*.npz
+data/Inverso/quantum_inverse/**/losshist_*.npz

@@ -1,0 +1,15 @@
+# Python >= 3.10.   pip install -r run/requirements.txt
+numpy
+scipy
+pandas
+matplotlib
+scienceplots
+tqdm
+torch
+pennylane
+qiskit
+qiskit-aer
+qiskit-ibm-runtime
+qiskit-machine-learning
+qiskit-algorithms
+pylatexenc

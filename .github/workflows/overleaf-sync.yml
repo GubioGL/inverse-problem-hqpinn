@@ -1,0 +1,47 @@
+# Two-way sync between paper/ and the Overleaf project (Overleaf Git integration).
+#
+#   GitHub -> Overleaf : every push to main that touches paper/
+#   Overleaf -> GitHub : every 3 hours, or now with  Actions -> Overleaf sync -> Run workflow
+#
+# One-time setup: Overleaf Account Settings -> Git integration -> generate a token, then in this
+# repository Settings -> Secrets and variables -> Actions -> New repository secret OVERLEAF_TOKEN.
+# The token expires after one year; replace the secret when that happens.
+name: Overleaf sync
+
+on:
+  push:
+    branches: [main]
+    paths: ["paper/**"]
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      first_sync:
+        description: "First sync only: which side wins if both already hold a different paper"
+        type: choice
+        options: [auto, github, overleaf]
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: overleaf-sync
+  cancel-in-progress: false
+
+env:
+  OVERLEAF_PROJECT_ID: 6ad4df833716c9db1f4aabee
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync paper/ with Overleaf
+        env:
+          OVERLEAF_TOKEN: ${{ secrets.OVERLEAF_TOKEN }}
+          FIRST_SYNC: ${{ inputs.first_sync || 'auto' }}
+        run: bash .github/scripts/overleaf_sync.sh
