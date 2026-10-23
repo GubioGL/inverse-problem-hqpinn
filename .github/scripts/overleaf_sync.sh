@@ -61,7 +61,7 @@ overleaf_commit_push() {   # paper/ -> Overleaf
   git -C "$OL_DIR" add -A
   if git -C "$OL_DIR" diff --cached --quiet; then log "Overleaf already up to date"; return; fi
   git -C "$OL_DIR" commit -q -m "Update from GitHub ($(git rev-parse --short HEAD))"
-  remote "Push to Overleaf" git -C "$OL_DIR" push origin HEAD:master
+  remote "Push to Overleaf" git -C "$OL_DIR" push origin "HEAD:$OL_BRANCH"
   log "pushed paper/ to Overleaf"
 }
 
@@ -79,6 +79,7 @@ remote "Clone of the Overleaf project" git clone -q "$OVERLEAF_URL" "$OL_DIR"
 git -C "$OL_DIR" config user.name  "overleaf-sync[bot]"
 git -C "$OL_DIR" config user.email "overleaf-sync@users.noreply.github.com"
 OL_HEAD=$(git -C "$OL_DIR" rev-parse HEAD)
+OL_BRANCH=$(git -C "$OL_DIR" symbolic-ref --short HEAD)   # Overleaf's branch ("main"; older projects "master")
 mkdir -p "$PAPER_DIR"
 
 # ------------------------------------------------------------------ first sync
