@@ -9,7 +9,9 @@
 #   OVERLEAF_PROJECT_ID   id from the project URL (overleaf.com/project/<id>)
 #   OVERLEAF_TOKEN        Overleaf Git authentication token (Account Settings -> Git integration)
 #   OVERLEAF_URL          optional: full remote URL instead of the two above (used by the tests)
-#   FIRST_SYNC            auto | github | overleaf   -- who wins the very first sync (default auto)
+#   FIRST_SYNC            auto | github | overleaf   -- who wins the very first sync (default auto:
+#                         GitHub, unless paper/ only holds the starter skeleton and Overleaf has a draft).
+#                         Nothing is lost either way: Overleaf keeps every earlier version in its History.
 #   PAPER_DIR             default "paper";  BRANCH  default "main"
 set -euo pipefail
 
@@ -74,19 +76,10 @@ if [[ ! -f "$STATE" ]]; then
   if [[ $winner == auto ]]; then
     n_ol=$(find "$OL_DIR" -type f -not -path '*/.git/*' | wc -l)
     lines=$(cat "$OL_DIR"/*.tex 2>/dev/null | wc -l)
-    if (( n_ol <= 3 && lines <= 80 )); then
-      winner=github                      # Overleaf still holds its blank template
-    elif [[ -f "$PAPER_DIR/.placeholder" ]]; then
-      winner=overleaf                    # this repository only has the starter skeleton
+    if [[ -f "$PAPER_DIR/.placeholder" ]] && (( n_ol > 3 || lines > 80 )); then
+      winner=overleaf                    # GitHub only has the starter skeleton, Overleaf has a draft
     else
-      git checkout -q -b overleaf-initial
-      mirror "$OL_DIR" "$PAPER_DIR"; git add -A -f "$PAPER_DIR"
-      git commit -q -m "Overleaf project as found on the first sync" || true
-      git push -q -f origin overleaf-initial
-      echo "::error::Both GitHub and Overleaf already have a different paper. The Overleaf version is on" \
-           "the branch 'overleaf-initial'. Compare it with main, then re-run this workflow with" \
-           "first_sync = github (keep main) or overleaf (keep Overleaf)."
-      exit 1
+      winner=github
     fi
   fi
   log "first sync: $winner wins"
@@ -109,12 +102,7 @@ if [[ ! -f "$STATE" ]]; then
       git rm -q "$PAPER_DIR/.placeholder"; git commit -q -m "Starter paper goes to Overleaf"
       git push -q origin "HEAD:$BRANCH"
     fi
-    # keep a copy of whatever Overleaf had (it is also in the Overleaf project history)
-    if (( $(find "$OL_DIR" -type f -not -path '*/.git/*' | wc -l) > 0 )); then
-      git fetch -q "$OL_DIR" HEAD && git push -q -f origin FETCH_HEAD:refs/heads/overleaf-backup \
-        && log "previous Overleaf content saved on branch overleaf-backup" \
-        || log "could not save the overleaf-backup branch (continuing; Overleaf keeps its own history)"
-    fi
+    log "the previous Overleaf version stays available in Overleaf: History (top right of the editor)"
     overleaf_commit_push
   fi
   save_state; exit 0

@@ -11,13 +11,13 @@ name: Overleaf sync
 on:
   push:
     branches: [main]
-    paths: ["paper/**"]
+    paths: ["paper/**", ".github/workflows/overleaf-sync.yml", ".github/scripts/overleaf_sync.sh"]
   schedule:
     - cron: "23 */3 * * *"
   workflow_dispatch:
     inputs:
       first_sync:
-        description: "First sync only: which side wins if both already hold a different paper"
+        description: "First sync only (ignored afterwards): auto = GitHub wins, unless GitHub only has the starter paper"
         type: choice
         options: [auto, github, overleaf]
         default: auto

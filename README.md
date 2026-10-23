@@ -82,6 +82,8 @@ figures. On the first sync:
   kept and sent to Overleaf;
 - if the Overleaf project is still blank, the starter goes to Overleaf.
 
+No branch is created; every earlier Overleaf version stays in Overleaf's *History*.
+
 ## Data
 
 All result files the scripts read are included, with two exceptions:
