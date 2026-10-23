@@ -13,7 +13,9 @@
 #                         GitHub, unless paper/ only holds the starter skeleton and Overleaf has a draft).
 #                         Nothing is lost either way: Overleaf keeps every earlier version in its History.
 #   PAPER_DIR             default "paper";  BRANCH  default "main"
-set -euo pipefail
+set -Eeuo pipefail
+# Any unexpected failure becomes a visible error in the Actions run (secrets are masked by GitHub).
+trap 'echo "::error::Overleaf sync failed at line $LINENO: $BASH_COMMAND"' ERR
 
 PAPER_DIR=${PAPER_DIR:-paper}
 BRANCH=${BRANCH:-main}
@@ -33,6 +35,18 @@ fi
 
 log() { echo "[overleaf-sync] $*"; }
 
+# run a git command that talks to a server; on failure show the server's answer as the error
+remote() {
+  local what=$1; shift
+  local out
+  if ! out=$("$@" 2>&1); then
+    trap - ERR
+    echo "$out"
+    echo "::error::$what failed: $(echo "$out" | grep -v '^\s*$' | tail -n 6 | tr '\n' ' ')"
+    exit 1
+  fi
+}
+
 # copy the contents of $1 into $2, replacing everything in $2 except its .git
 mirror() {
   local src=$1 dst=$2
@@ -47,7 +61,7 @@ overleaf_commit_push() {   # paper/ -> Overleaf
   git -C "$OL_DIR" add -A
   if git -C "$OL_DIR" diff --cached --quiet; then log "Overleaf already up to date"; return; fi
   git -C "$OL_DIR" commit -q -m "Update from GitHub ($(git rev-parse --short HEAD))"
-  git -C "$OL_DIR" push -q origin HEAD:master
+  remote "Push to Overleaf" git -C "$OL_DIR" push origin HEAD:master
   log "pushed paper/ to Overleaf"
 }
 
@@ -56,12 +70,12 @@ save_state() {
   printf 'overleaf=%s\ngithub=%s\n' "$(git -C "$OL_DIR" rev-parse HEAD)" "$(git rev-parse HEAD)" > "$STATE"
   git add "$STATE"
   git commit -q -m "Overleaf sync state [skip ci]"
-  git push -q origin "HEAD:$BRANCH"
+  remote "Push to GitHub ($BRANCH)" git push origin "HEAD:$BRANCH"
 }
 
 git config user.name  "overleaf-sync[bot]"
 git config user.email "overleaf-sync@users.noreply.github.com"
-git clone -q "$OVERLEAF_URL" "$OL_DIR"
+remote "Clone of the Overleaf project" git clone -q "$OVERLEAF_URL" "$OL_DIR"
 git -C "$OL_DIR" config user.name  "overleaf-sync[bot]"
 git -C "$OL_DIR" config user.email "overleaf-sync@users.noreply.github.com"
 OL_HEAD=$(git -C "$OL_DIR" rev-parse HEAD)
