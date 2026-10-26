@@ -1,9 +1,18 @@
 % =====================================================================
-% References. Entries marked "VERIFY" could not be fully checked online
-% (author list / volume); confirm before submission.
+% references.bib -- HQPINN draft
+% NOTE: merge with the references.bib of the PINNverse paper; the key
+% PhysRevA.110.032607 below must be replaced by the full entry from there.
+% Entries marked "% VERIFICAR" should be double-checked before submission.
 % =====================================================================
 
-% ---- physics-informed machine learning --------------------------------
+@article{PhysRevA.110.032607,
+  note    = {COPIAR a entrada completa do references.bib do artigo PINNverse},
+  journal = {Phys. Rev. A},
+  volume  = {110},
+  pages   = {032607},
+  year    = {2024}
+}
+
 @article{raissi2019physics,
   author  = {Raissi, M. and Perdikaris, P. and Karniadakis, G. E.},
   title   = {Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations},
@@ -13,6 +22,7 @@
   year    = {2019},
   doi     = {10.1016/j.jcp.2018.10.045}
 }
+
 @article{karniadakis2021physics,
   author  = {Karniadakis, G. E. and Kevrekidis, I. G. and Lu, L. and Perdikaris, P. and Wang, S. and Yang, L.},
   title   = {Physics-informed machine learning},
@@ -22,94 +32,14 @@
   year    = {2021},
   doi     = {10.1038/s42254-021-00314-5}
 }
-@article{lagaris1998artificial,
-  author  = {Lagaris, I. E. and Likas, A. and Fotiadis, D. I.},
-  title   = {Artificial neural networks for solving ordinary and partial differential equations},
-  journal = {IEEE Trans. Neural Netw.},
-  volume  = {9},
-  pages   = {987--1000},
-  year    = {1998},
-  doi     = {10.1109/72.712178}
-}
-@inproceedings{krishnapriyan2021characterizing,
-  author    = {Krishnapriyan, A. S. and Gholami, A. and Zhe, S. and Kirby, R. M. and Mahoney, M. W.},
-  title     = {Characterizing possible failure modes in physics-informed neural networks},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {34},
-  pages     = {26548--26560},
-  year      = {2021}
-}
-@article{wang2021understanding,
-  author  = {Wang, S. and Teng, Y. and Perdikaris, P.},
-  title   = {Understanding and mitigating gradient flow pathologies in physics-informed neural networks},
-  journal = {SIAM J. Sci. Comput.},
-  volume  = {43},
-  pages   = {A3055--A3081},
-  year    = {2021},
-  doi     = {10.1137/20M1318043}
-}
-@article{wang2022when,
-  author  = {Wang, S. and Yu, X. and Perdikaris, P.},
-  title   = {When and why {PINNs} fail to train: A neural tangent kernel perspective},
-  journal = {J. Comput. Phys.},
-  volume  = {449},
-  pages   = {110768},
-  year    = {2022},
-  doi     = {10.1016/j.jcp.2021.110768}
-}
-@inproceedings{tancik2020fourier,
-  author    = {Tancik, M. and Srinivasan, P. P. and Mildenhall, B. and Fridovich-Keil, S. and Raghavan, N. and Singhal, U. and Ramamoorthi, R. and Barron, J. T. and Ng, R.},
-  title     = {Fourier features let networks learn high frequency functions in low dimensional domains},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {33},
-  pages     = {7537--7547},
-  year      = {2020}
-}
-@inproceedings{rahimi2007random,
-  author    = {Rahimi, A. and Recht, B.},
-  title     = {Random features for large-scale kernel machines},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume    = {20},
-  year      = {2007}
+
+@article{farea2025qcpinn,
+  author  = {Farea, A. and Khan, S. and Celebi, M. S.},
+  title   = {{QCPINN}: Quantum classical physics-informed neural networks for solving {PDEs}},
+  journal = {arXiv:2503.16678},
+  year    = {2025}
 }
 
-% ---- quantum algorithms for differential equations / quantum PINNs ----
-@article{kyriienko2021solving,
-  author  = {Kyriienko, O. and Paine, A. E. and Elfving, V. E.},
-  title   = {Solving nonlinear differential equations with differentiable quantum circuits},
-  journal = {Phys. Rev. A},
-  volume  = {103},
-  pages   = {052416},
-  year    = {2021},
-  doi     = {10.1103/PhysRevA.103.052416}
-}
-@article{lubasch2020variational,
-  author  = {Lubasch, M. and Joo, J. and Moinier, P. and Kiffner, M. and Jaksch, D.},
-  title   = {Variational quantum algorithms for nonlinear problems},
-  journal = {Phys. Rev. A},
-  volume  = {101},
-  pages   = {010301(R)},
-  year    = {2020},
-  doi     = {10.1103/PhysRevA.101.010301}
-}
-@article{paine2023quantum,
-  author  = {Paine, A. E. and Elfving, V. E. and Kyriienko, O.},
-  title   = {Quantum kernel methods for solving regression problems and differential equations},
-  journal = {Phys. Rev. A},
-  volume  = {107},
-  pages   = {032428},
-  year    = {2023},
-  doi     = {10.1103/PhysRevA.107.032428}
-}
-@article{sedykh2024hybrid,
-  author  = {Sedykh, A. and Podapaka, M. and Sagingalieva, A. and Pinto, K. and Pflitsch, M. and Melnikov, A.},
-  title   = {Hybrid quantum physics-informed neural networks for simulating computational fluid dynamics in complex shapes},
-  journal = {Mach. Learn.: Sci. Technol.},
-  volume  = {5},
-  pages   = {025045},
-  year    = {2024},
-  doi     = {10.1088/2632-2153/ad43b2}
-}
 @article{berger2025trainable,
   author  = {Berger, S. and Hosters, N. and M{\"o}ller, M.},
   title   = {Trainable embedding quantum physics informed neural networks for solving nonlinear {PDEs}},
@@ -119,291 +49,145 @@
   year    = {2025},
   doi     = {10.1038/s41598-025-02959-z}
 }
-@article{farea2025qcpinn,
-  author  = {Farea, A. and Khan, S. and Celebi, M. S.},
-  title   = {{QCPINN}: Quantum-classical physics-informed neural networks for solving {PDEs}},
+
+@article{sedykh2024hybrid,
+  author  = {Sedykh, A. and Podapaka, M. and Sagingalieva, A. and Pinto, K. and Pflitsch, M. and Melnikov, A.},
+  title   = {Hybrid quantum physics-informed neural networks for simulating computational fluid dynamics in complex shapes},
   journal = {Mach. Learn.: Sci. Technol.},
-  year    = {2025},
-  doi     = {10.1088/2632-2153/ae1c91},
-  note    = {arXiv:2503.16678. VERIFY volume and article number}
-}
-@article{lantigua2026classical,
-  author  = {Lantigua, S. and Giraldi, G. and Portugal, R.},
-  title   = {Classical-quantum hybrid architecture for physics-informed neural networks},
-  journal = {Phys. Rev. A},
-  volume  = {113},
-  pages   = {042446},
-  year    = {2026},
-  doi     = {10.1103/fdd3-qz1s}
-}
-@misc{zabihi2026hybrid,
-  author       = {Zabihi, K. and Montazeri, H. and Suiker, A. S. J.},
-  title        = {Hybrid quantum-classical physics-informed neural networks for solving nonlinear {PDEs}: when and where hybridization is effective?},
-  year         = {2026},
-  eprint       = {2606.04679},
-  archivePrefix= {arXiv},
-  note         = {VERIFY author list}
-}
-@article{jaderberg2024let,
-  author  = {Jaderberg, B. and Gentile, A. A. and Berrada, Y. A. and Shishenina, E. and Elfving, V. E.},
-  title   = {Let quantum neural networks choose their own frequencies},
-  journal = {Phys. Rev. A},
-  volume  = {109},
-  pages   = {042421},
-  year    = {2024},
-  doi     = {10.1103/PhysRevA.109.042421}
+  volume  = {5},
+  pages   = {025045},
+  year    = {2024}
 }
 
-% ---- quantum machine learning: models, gradients, trainability ---------
-@article{mitarai2018quantum,
-  author  = {Mitarai, K. and Negoro, M. and Kitagawa, M. and Fujii, K.},
-  title   = {Quantum circuit learning},
+@article{kyriienko2021solving,
+  author  = {Kyriienko, O. and Paine, A. E. and Elfving, V. E.},
+  title   = {Solving nonlinear differential equations with differentiable quantum circuits},
   journal = {Phys. Rev. A},
-  volume  = {98},
-  pages   = {032309},
-  year    = {2018},
-  doi     = {10.1103/PhysRevA.98.032309}
+  volume  = {103},
+  pages   = {052416},
+  year    = {2021}
 }
-@article{schuld2019evaluating,
-  author  = {Schuld, M. and Bergholm, V. and Gogolin, C. and Izaac, J. and Killoran, N.},
-  title   = {Evaluating analytic gradients on quantum hardware},
-  journal = {Phys. Rev. A},
-  volume  = {99},
-  pages   = {032331},
-  year    = {2019},
-  doi     = {10.1103/PhysRevA.99.032331}
-}
-@article{wierichs2022general,
-  author  = {Wierichs, D. and Izaac, J. and Wang, C. and Lin, C. Y.-Y.},
-  title   = {General parameter-shift rules for quantum gradients},
-  journal = {Quantum},
-  volume  = {6},
-  pages   = {677},
-  year    = {2022},
-  doi     = {10.22331/q-2022-03-30-677}
-}
+
 @article{schuld2021effect,
   author  = {Schuld, M. and Sweke, R. and Meyer, J. J.},
   title   = {Effect of data encoding on the expressive power of variational quantum-machine-learning models},
   journal = {Phys. Rev. A},
   volume  = {103},
   pages   = {032430},
-  year    = {2021},
-  doi     = {10.1103/PhysRevA.103.032430}
+  year    = {2021}
 }
-@article{nakanishi2020sequential,
-  author  = {Nakanishi, K. M. and Fujii, K. and Todo, S.},
-  title   = {Sequential minimal optimization for quantum-classical hybrid algorithms},
-  journal = {Phys. Rev. Res.},
-  volume  = {2},
-  pages   = {043158},
-  year    = {2020},
-  doi     = {10.1103/PhysRevResearch.2.043158}
-}
-@article{ostaszewski2021structure,
-  author  = {Ostaszewski, M. and Grant, E. and Benedetti, M.},
-  title   = {Structure optimization for parameterized quantum circuits},
-  journal = {Quantum},
-  volume  = {5},
-  pages   = {391},
-  year    = {2021},
-  doi     = {10.22331/q-2021-01-28-391}
-}
-@article{sung2020using,
-  author  = {Sung, K. J. and Yao, J. and Harrigan, M. P. and Rubin, N. C. and Jiang, Z. and Lin, L. and Babbush, R. and McClean, J. R.},
-  title   = {Using models to improve optimizers for variational quantum algorithms},
-  journal = {Quantum Sci. Technol.},
-  volume  = {5},
-  pages   = {044008},
-  year    = {2020},
-  doi     = {10.1088/2058-9565/abb6d9}
-}
-@article{schreiber2023classical,
-  author  = {Schreiber, F. J. and Eisert, J. and Meyer, J. J.},
-  title   = {Classical surrogates for quantum learning models},
-  journal = {Phys. Rev. Lett.},
-  volume  = {131},
-  pages   = {100803},
-  year    = {2023},
-  doi     = {10.1103/PhysRevLett.131.100803}
-}
+
 @article{mcclean2018barren,
   author  = {McClean, J. R. and Boixo, S. and Smelyanskiy, V. N. and Babbush, R. and Neven, H.},
   title   = {Barren plateaus in quantum neural network training landscapes},
   journal = {Nat. Commun.},
   volume  = {9},
   pages   = {4812},
-  year    = {2018},
-  doi     = {10.1038/s41467-018-07090-4}
+  year    = {2018}
 }
+
 @article{cerezo2021cost,
   author  = {Cerezo, M. and Sone, A. and Volkoff, T. and Cincio, L. and Coles, P. J.},
   title   = {Cost function dependent barren plateaus in shallow parametrized quantum circuits},
   journal = {Nat. Commun.},
   volume  = {12},
   pages   = {1791},
-  year    = {2021},
-  doi     = {10.1038/s41467-021-21728-w}
+  year    = {2021}
 }
-@article{cerezo2021variational,
-  author  = {Cerezo, M. and Arrasmith, A. and Babbush, R. and Benjamin, S. C. and Endo, S. and Fujii, K. and McClean, J. R. and Mitarai, K. and Yuan, X. and Cincio, L. and Coles, P. J.},
-  title   = {Variational quantum algorithms},
-  journal = {Nat. Rev. Phys.},
+
+@article{holmes2022connecting,
+  author  = {Holmes, Z. and Sharma, K. and Cerezo, M. and Coles, P. J.},
+  title   = {Connecting ansatz expressibility to gradient magnitudes and barren plateaus},
+  journal = {PRX Quantum},
   volume  = {3},
-  pages   = {625--644},
-  year    = {2021},
-  doi     = {10.1038/s42254-021-00348-9}
+  pages   = {010313},
+  year    = {2022}
 }
-@article{bharti2022noisy,
-  author  = {Bharti, K. and Cervera-Lierta, A. and Kyaw, T. H. and Haug, T. and Alperin-Lea, S. and Anand, A. and Degroote, M. and Heimonen, H. and Kottmann, J. S. and Menke, T. and Mok, W.-K. and Sim, S. and Kwek, L.-C. and Aspuru-Guzik, A.},
-  title   = {Noisy intermediate-scale quantum algorithms},
-  journal = {Rev. Mod. Phys.},
-  volume  = {94},
-  pages   = {015004},
-  year    = {2022},
-  doi     = {10.1103/RevModPhys.94.015004}
+
+@article{ortizmarrero2021entanglement,
+  author  = {Ortiz Marrero, C. and Kieferov{\'a}, M. and Wiebe, N.},
+  title   = {Entanglement-induced barren plateaus},
+  journal = {PRX Quantum},
+  volume  = {2},
+  pages   = {040316},
+  year    = {2021}
 }
-@article{havlicek2019supervised,
-  author  = {Havl{\'\i}{\v c}ek, V. and C{\'o}rcoles, A. D. and Temme, K. and Harrow, A. W. and Kandala, A. and Chow, J. M. and Gambetta, J. M.},
-  title   = {Supervised learning with quantum-enhanced feature spaces},
-  journal = {Nature},
-  volume  = {567},
-  pages   = {209--212},
-  year    = {2019},
-  doi     = {10.1038/s41586-019-0980-2}
-}
-@article{abbas2021power,
-  author  = {Abbas, A. and Sutter, D. and Zoufal, C. and Lucchi, A. and Figalli, A. and Woerner, S.},
-  title   = {The power of quantum neural networks},
-  journal = {Nat. Comput. Sci.},
-  volume  = {1},
-  pages   = {403--409},
-  year    = {2021},
-  doi     = {10.1038/s43588-021-00084-1}
-}
-@article{fujii2017harnessing,
-  author  = {Fujii, K. and Nakajima, K.},
-  title   = {Harnessing disordered-ensemble quantum dynamics for machine learning},
-  journal = {Phys. Rev. Appl.},
-  volume  = {8},
-  pages   = {024030},
-  year    = {2017},
-  doi     = {10.1103/PhysRevApplied.8.024030}
-}
+
 @article{mujal2021opportunities,
-  author  = {Mujal, P. and Mart{\'\i}nez-Pe{\~n}a, R. and Nokkala, J. and Garc{\'\i}a-Beni, J. and Giorgi, G. L. and Soriano, M. C. and Zambrini, R.},
+  author  = {Mujal, P. and Mart{\'i}nez-Pe{\~n}a, R. and Nokkala, J. and Garc{\'i}a-Beni, J. and Giorgi, G. L. and Soriano, M. C. and Zambrini, R.},
   title   = {Opportunities in quantum reservoir computing and extreme learning machines},
   journal = {Adv. Quantum Technol.},
   volume  = {4},
   pages   = {2100027},
-  year    = {2021},
-  doi     = {10.1002/qute.202100027}
+  year    = {2021}
 }
+
 @article{henderson2020quanvolutional,
   author  = {Henderson, M. and Shakya, S. and Pradhan, S. and Cook, T.},
   title   = {Quanvolutional neural networks: powering image recognition with quantum circuits},
   journal = {Quantum Mach. Intell.},
   volume  = {2},
   pages   = {2},
-  year    = {2020},
-  doi     = {10.1007/s42484-020-00012-y}
+  year    = {2020}
 }
 
-% ---- hardware, training through physical systems, optimizers -----------
-@article{wright2022deep,
-  author  = {Wright, L. G. and Onodera, T. and Stein, M. M. and Wang, T. and Schachter, D. T. and Hu, Z. and McMahon, P. L.},
-  title   = {Deep physical neural networks trained with backpropagation},
-  journal = {Nature},
-  volume  = {601},
-  pages   = {549--555},
-  year    = {2022},
-  doi     = {10.1038/s41586-021-04223-6}
+@article{sim2019expressibility,
+  author  = {Sim, S. and Johnson, P. D. and Aspuru-Guzik, A.},
+  title   = {Expressibility and entangling capability of parameterized quantum circuits for hybrid quantum-classical algorithms},
+  journal = {Adv. Quantum Technol.},
+  volume  = {2},
+  pages   = {1900070},
+  year    = {2019}
 }
-@misc{bengio2013estimating,
-  author       = {Bengio, Y. and L{\'e}onard, N. and Courville, A.},
-  title        = {Estimating or propagating gradients through stochastic neurons for conditional computation},
-  year         = {2013},
-  eprint       = {1308.3432},
-  archivePrefix= {arXiv}
+
+@article{dambre2012information,
+  author  = {Dambre, J. and Verstraeten, D. and Schrauwen, B. and Massar, S.},
+  title   = {Information processing capacity of dynamical systems},
+  journal = {Sci. Rep.},
+  volume  = {2},
+  pages   = {514},
+  year    = {2012}
 }
-@article{spall1992multivariate,
-  author  = {Spall, J. C.},
-  title   = {Multivariate stochastic approximation using a simultaneous perturbation gradient approximation},
-  journal = {IEEE Trans. Autom. Control},
-  volume  = {37},
-  pages   = {332--341},
-  year    = {1992},
-  doi     = {10.1109/9.119632}
+
+@article{thanasilp2024exponential,
+  author  = {Thanasilp, S. and Wang, S. and Cerezo, M. and Holmes, Z.},
+  title   = {Exponential concentration in quantum kernel methods},
+  journal = {Nat. Commun.},
+  volume  = {15},
+  pages   = {5200},
+  year    = {2024}
+}  % VERIFICAR
+
+@article{golub1973differentiation,
+  author  = {Golub, G. H. and Pereyra, V.},
+  title   = {The differentiation of pseudo-inverses and nonlinear least squares problems whose variables separate},
+  journal = {SIAM J. Numer. Anal.},
+  volume  = {10},
+  pages   = {413--432},
+  year    = {1973}
 }
-@article{kandala2017hardware,
-  author  = {Kandala, A. and Mezzacapo, A. and Temme, K. and Takita, M. and Brink, M. and Chow, J. M. and Gambetta, J. M.},
-  title   = {Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets},
-  journal = {Nature},
-  volume  = {549},
-  pages   = {242--246},
-  year    = {2017},
-  doi     = {10.1038/nature23879}
+
+@article{bengio2013estimating,
+  author  = {Bengio, Y. and L{\'e}onard, N. and Courville, A.},
+  title   = {Estimating or propagating gradients through stochastic neurons for conditional computation},
+  journal = {arXiv:1308.3432},
+  year    = {2013}
 }
-@article{kim2023evidence,
-  author  = {Kim, Y. and Eddins, A. and Anand, S. and Wei, K. X. and van den Berg, E. and Rosenblatt, S. and Nayfeh, H. and Wu, Y. and Zaletel, M. and Temme, K. and Kandala, A.},
-  title   = {Evidence for the utility of quantum computing before fault tolerance},
-  journal = {Nature},
-  volume  = {618},
-  pages   = {500--505},
-  year    = {2023},
-  doi     = {10.1038/s41586-023-06096-3}
-}
-@article{temme2017error,
-  author  = {Temme, K. and Bravyi, S. and Gambetta, J. M.},
-  title   = {Error mitigation for short-depth quantum circuits},
-  journal = {Phys. Rev. Lett.},
-  volume  = {119},
-  pages   = {180509},
-  year    = {2017},
-  doi     = {10.1103/PhysRevLett.119.180509}
-}
-@article{vandenberg2022model,
-  author  = {van den Berg, E. and Minev, Z. K. and Temme, K.},
-  title   = {Model-free readout-error mitigation for quantum expectation values},
-  journal = {Phys. Rev. A},
-  volume  = {105},
-  pages   = {032620},
-  year    = {2022},
-  doi     = {10.1103/PhysRevA.105.032620}
-}
-@misc{javadiabhari2024qiskit,
-  author       = {Javadi-Abhari, A. and Treinish, M. and Krsulich, K. and Wood, C. J. and Lishman, J. and Gacon, J. and Martiel, S. and Nation, P. D. and Bishop, L. S. and Cross, A. W. and Johnson, B. R. and Gambetta, J. M.},
-  title        = {Quantum computing with {Qiskit}},
-  year         = {2024},
-  eprint       = {2405.08810},
-  archivePrefix= {arXiv}
-}
+
 @inproceedings{loshchilov2019decoupled,
   author    = {Loshchilov, I. and Hutter, F.},
   title     = {Decoupled weight decay regularization},
-  booktitle = {International Conference on Learning Representations},
+  booktitle = {International Conference on Learning Representations (ICLR)},
   year      = {2019}
 }
-@article{liu1989limited,
-  author  = {Liu, D. C. and Nocedal, J.},
-  title   = {On the limited memory {BFGS} method for large scale optimization},
-  journal = {Math. Program.},
-  volume  = {45},
-  pages   = {503--528},
-  year    = {1989},
-  doi     = {10.1007/BF01589116}
+
+@inproceedings{loshchilov2017sgdr,
+  author    = {Loshchilov, I. and Hutter, F.},
+  title     = {{SGDR}: Stochastic gradient descent with warm restarts},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2017}
 }
 
-% ---- Burgers equation -------------------------------------------------
-@article{basdevant1986spectral,
-  author  = {Basdevant, C. and Deville, M. and Haldenwang, P. and Lacroix, J. M. and Ouazzani, J. and Peyret, R. and Orlandi, P. and Patera, A. T.},
-  title   = {Spectral and finite difference solutions of the {Burgers} equation},
-  journal = {Comput. Fluids},
-  volume  = {14},
-  pages   = {23--41},
-  year    = {1986},
-  doi     = {10.1016/0045-7930(86)90036-8}
-}
 @article{cole1951quasi,
   author  = {Cole, J. D.},
   title   = {On a quasi-linear parabolic equation occurring in aerodynamics},
@@ -412,12 +196,64 @@
   pages   = {225--236},
   year    = {1951}
 }
+
 @article{hopf1950partial,
   author  = {Hopf, E.},
-  title   = {The partial differential equation $u_t + uu_x = \mu u_{xx}$},
+  title   = {The partial differential equation $u_t+uu_x=\mu u_{xx}$},
   journal = {Commun. Pure Appl. Math.},
   volume  = {3},
   pages   = {201--230},
-  year    = {1950},
-  doi     = {10.1002/cpa.3160030302}
+  year    = {1950}
+}
+
+@article{basdevant1986spectral,
+  author  = {Basdevant, C. and Deville, M. and Haldenwang, P. and Lacroix, J. M. and Ouazzani, J. and Peyret, R. and Orlandi, P. and Patera, A. T.},
+  title   = {Spectral and finite difference solutions of the {B}urgers equation},
+  journal = {Comput. Fluids},
+  volume  = {14},
+  pages   = {23--41},
+  year    = {1986}
+}
+
+@article{javadiabhari2024qiskit,
+  author  = {Javadi-Abhari, A. and others},
+  title   = {Quantum computing with {Qiskit}},
+  journal = {arXiv:2405.08810},
+  year    = {2024}
+}
+
+@article{preskill2018quantum,
+  author  = {Preskill, J.},
+  title   = {Quantum computing in the {NISQ} era and beyond},
+  journal = {Quantum},
+  volume  = {2},
+  pages   = {79},
+  year    = {2018}
+}
+
+@article{bharti2022noisy,
+  author  = {Bharti, K. and others},
+  title   = {Noisy intermediate-scale quantum algorithms},
+  journal = {Rev. Mod. Phys.},
+  volume  = {94},
+  pages   = {015004},
+  year    = {2022}
+}
+
+@article{rahaman2019spectral,
+  author  = {Rahaman, N. and Baratin, A. and Arpit, D. and Draxler, F. and Lin, M. and Hamprecht, F. and Bengio, Y. and Courville, A.},
+  title   = {On the spectral bias of neural networks},
+  journal = {Proc. Mach. Learn. Res.},
+  volume  = {97},
+  pages   = {5301--5310},
+  year    = {2019}
+}
+
+@inproceedings{krishnapriyan2021characterizing,
+  author    = {Krishnapriyan, A. and Gholami, A. and Zhe, S. and Kirby, R. and Mahoney, M. W.},
+  title     = {Characterizing possible failure modes in physics-informed neural networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {34},
+  pages     = {26548--26560},
+  year      = {2021}
 }

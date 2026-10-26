@@ -1,118 +1,473 @@
-\documentclass[floatfix,aps,pra,twocolumn,superscriptaddress,10pt,nofootinbib]{revtex4-2}
-% Starter manuscript for the inverse problem. On the first Overleaf sync it is replaced by the
-% Overleaf project if that project already holds a draft (see README, "Paper and Overleaf").
+\documentclass[floatfix,aps,pra,twocolumn,showpacs,superscriptaddress,10pt,nofootinbib]{revtex4-2}
 
 \usepackage{graphicx}
+\usepackage{dcolumn}
 \usepackage{bm}
 \usepackage{booktabs}
-\usepackage{amsmath,amssymb}
+\usepackage[title]{appendix}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.pathreplacing,fit,backgrounds}
 \usepackage{hyperref}
 
-% Same colours as the forward-problem paper: quantum = orange, classical = blue
-\definecolor{qcol}{HTML}{EB6834}
-\definecolor{ccol}{HTML}{2A78D6}
+% ---------------------------------------------------------------------
+% Colours used consistently in every figure (quantum = orange, classical = blue)
+\definecolor{qcol}{HTML}{E8603C}
+\definecolor{ccol}{HTML}{2A7BD8}
 
+% Working notes -- set \showtodostrue -> \showtodosfalse to hide them all
 \newif\ifshowtodos \showtodostrue
 \newcommand{\TODO}[1]{\ifshowtodos\textcolor{red}{\textbf{[TODO:} #1\textbf{]}}\fi}
-\newcommand{\Ncol}{N_{\rm col}}
+\newcommand{\placeholder}[2][4.2cm]{%
+  \fbox{\parbox[c][#1][c]{0.93\linewidth}{\centering\small\color{gray!70!black}#2}}}
 
-\hypersetup{colorlinks=true, linkcolor=blue!50!black, citecolor=blue!50!black, urlcolor=blue!50!black}
-\graphicspath{{figures/}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\wmed}{\operatorname{wmed}}
+\newcommand{\sg}{\operatorname{sg}}
 
 \begin{document}
 
-\title{Inferring the viscosity of Burgers' equation with a hybrid quantum physics-informed neural network}
+\title{Hybrid quantum--classical physics-informed neural networks with a fixed quantum layer for inverse problems}
+% Alternative titles:
+%  - "Parameter identification in Burgers' equation with a hybrid quantum PINN trained with the quantum processor in the loop"
+%  - "A non-variational quantum layer for physics-informed inverse problems"
 
 \author{Gubio G. de Lima}
 \email{gubio.gomes@estudante.ufscar.br}
 \affiliation{\TODO{afilia\c{c}\~ao (CBPF / UFSCar)}}
 
+\author{Erick \TODO{sobrenome}}
+\affiliation{\TODO{afilia\c{c}\~ao}}
+
 \begin{abstract}
-\TODO{Resumo -- a escrever por \'ultimo.}
+\TODO{Resumo -- a escrever ap\'os os resultados em hardware real.}
 \end{abstract}
 
 \maketitle
 
+% =====================================================================
 \section{Introduction}\label{sec:intro}
-\TODO{Inverse problems with PINNs; why a fixed quantum layer; what is new here.}
+% =====================================================================
+\TODO{Introdu\c{c}\~ao -- a escrever.}
+% Suggested storyline (from the Aug/2026 project update):
+%  1. PINNs and inverse problems (PINNverse, Ref. [PhysRevA.110.032607]); long-term goal: seismic inversion.
+%  2. Hybrid quantum PINNs in the literature: always a *trainable* PQC [QCPINN, TE-QPINN, HQPINN],
+%     always noiseless simulation; exposed to barren plateaus.
+%  3. Fixed (non-variational) circuits exist (QRC/QELM/quanvolutional/QRFM) but never inside a
+%     physics-informed residual loss.
+%  4. Our proposal: fixed quantum layer + classical pre/post networks + variable projection for the
+%     physical parameter; the quantum processor in the training loop through a calibrated surrogate.
+%  5. Contributions + outline.
 
-\section{Inverse problem}\label{sec:problem}
-We consider the viscous Burgers equation
+% =====================================================================
+\section{Theoretical framework}\label{sec:theory}
+% =====================================================================
+\newpage
+\subsection{Inverse problem}\label{sec:problem}
+
+We consider the viscous Burgers equation on the periodic unit interval,
 \begin{equation}
-  u_t + u\,u_x = \nu\,u_{xx}, \qquad x \in [0, 1) \text{ periodic}, \quad u(x, 0) = \sin(2\pi x),
+  \partial_t u + u\,\partial_x u = \nu\,\partial_x^2 u,\qquad x\in[0,1),\ t\in[0,T],
+  \label{eq:burgers}
 \end{equation}
-with the viscosity $\nu$ unknown. The true value is $\nu = 0.01$, and we study two final times,
-$T = 0.1$ and $T = 1$; for $T = 1$ a shock forms before the final time. At every epoch, $\Ncol = 10$
-new collocation points $(x_c, t_c)$ are drawn at random in $[0, 1) \times [0, T]$. They are used twice:
-for the residual of the equation and as data, the exact (Cole--Hopf) solution at the same points.
-The network is trained on both, and $\nu$ is learned together with it~\cite{raissi2019physics}.
+with $u(x+1,t)=u(x,t)$ and initial condition $u(x,0)=\sin(2\pi x)$. Equation~\eqref{eq:burgers} is the simplest PDE that combines nonlinear advection with diffusion; the viscosity $\nu$ sets the competition between wave steepening and smoothing and therefore the stiffness of the problem~\cite{basdevant1986spectral}. The \emph{inverse problem} is to recover the unknown viscosity $\nu$ from sparse observations
+\begin{equation}
+  \mathcal D=\{(x_i,t_i,u^\star_i)\}_{i=1}^{N},\qquad u^\star_i=u(x_i,t_i;\nu_{\rm true})+\varepsilon_i ,
+  \label{eq:data}
+\end{equation}
+while simultaneously reconstructing the field $u(x,t)$. In the present work the observations are given by the exact Cole--Hopf solution (Appendix~\ref{app:colehopf}) with $\nu_{\rm true}=0.1$, $T=0.1$ and $\varepsilon_i=0$. This problem is a controlled first step towards the seismic inverse problem, in which a wave speed $c(x)$ plays the role of $\nu$.
 
-\section{Models and training}\label{sec:methods}
-Both models share the same structure: a pre-network maps $(\sin 2\pi x, \cos 2\pi x, t/T)$ to $k$
-features, a middle block transforms them, and a post-network maps them to $u$ (one hidden layer of 10
-$\tanh$ units in each network). In the classical PINN the middle block is a trainable bottleneck of
-$k = 3$, 7 or 10 neurons. In the hybrid quantum PINN it is a fixed circuit on $k = 3$, 7 or 10 qubits:
-the features enter as $R_Y$ angles, followed by a brickwork layer of CNOTs, and the outputs are the
-expectation values $\langle Z_i\rangle$. The circuit is evaluated on the FakeBerlin emulator of the
-\texttt{ibm\_berlin} device (1024 shots) with the device in the training loop: one job per epoch, with
-the gradient taken through a polynomial calibrated on the device.
+The residual of Eq.~\eqref{eq:burgers} is written as
+\begin{equation}
+  r(x,t;\nu)=A(x,t)-\nu\,B(x,t),
+  \label{eq:residual}
+\end{equation}
+with $A=\partial_t u+u\,\partial_x u$ and $B=\partial_x^2 u$, which makes explicit that the unknown parameter enters \emph{linearly}. This property is exploited by the parameter update of Appendix~\ref{sec:varpro}.
 
-The residual $u_t + u u_x - \nu u_{xx}$ is computed by finite differences on a 5-point stencil around
-each collocation point, and split as $A - \nu B$. The network is trained with AdamW on the loss
-$\lambda_r\,\mathrm{MAE}(A - \nu B) + w_d\,\mathrm{MAE}(u - u_{\rm data})$, with 16 steps per epoch,
-$w_d \gg 1$ and $\lambda_r$ ramping from 0 to 1 in the first epochs. With the network fixed, the $\nu$
-that minimizes the residual of the batch is the $|B|$-weighted median of $A/B$, and $\log\nu$ is
-relaxed towards it at every epoch. Training stops after 110 epochs.
+\subsection{Physics-informed neural networks for inverse problems}\label{sec:pinn}
 
-For $T = 1$ three changes are needed to represent the shock: the initial condition enters as a loss
-on 10 random points at $t = 0$ instead of being imposed exactly, the first 10 epochs use the data loss
-only with $\nu$ frozen, and the learning rate is cut on plateaus of the loss instead of decaying as a
-cosine. Both models use the same changes.
+A physics-informed neural network (PINN)~\cite{raissi2019physics,karniadakis2021physics} approximates the solution by a parametrized function $u_\Theta(x,t)$ and penalizes the PDE residual together with the misfit to the data. In the inverse setting (PINNverse~\cite{PhysRevA.110.032607}) the physical parameter is promoted to an unknown of the optimization,
+\begin{equation}
+  (\Theta^\ast,\nu^\ast)=\arg\min_{\Theta,\nu}\; \mathcal L_{\rm res}[\Theta,\nu]+w_d\,\mathcal L_{\rm data}[\Theta].
+  \label{eq:pinn_inverse}
+\end{equation}
+The data term fixes the particular solution and the residual term constrains $\nu$: for a network that reproduces the data, $\nu$ is identified by requiring $A-\nu B\simeq0$ throughout the domain.
 
-\section{Results}\label{sec:results}
+Periodicity and the initial condition are imposed exactly by construction. The network acts on the periodic feature vector $\bm\xi(x,t)=(\sin2\pi x,\cos2\pi x,t/T)$ and the output is
+\begin{equation}
+  u_\Theta(x,t)=\sin(2\pi x)+\frac{t}{T}\,\big(\mathcal N_{\rm post}\circ\mathcal M\circ\mathcal N_{\rm pre}\big)\big(\bm\xi(x,t)\big),
+  \label{eq:composition}
+\end{equation}
+so that no boundary or initial-condition loss is needed and Eq.~\eqref{eq:pinn_inverse} contains only two terms. In Eq.~\eqref{eq:composition} a classical pre-network $\mathcal N_{\rm pre}(\cdot;\bm\phi):\mathbb R^3\to\mathbb R^n$ maps the features to an $n$-dimensional latent vector $\bm\theta$, a middle block $\mathcal M$ transforms it, and a classical post-network $\mathcal N_{\rm post}(\cdot;\bm\psi):\mathbb R^n\to\mathbb R$ produces the correction to the initial profile. Both classical networks have one hidden layer of 10 $\tanh$ units and a linear output. The classical and hybrid PINNs differ \emph{only} in the middle block (Fig.~\ref{fig:schematic}a), so that any difference in performance can be attributed to it.
 
-\begin{figure*}
-  \includegraphics[width=\textwidth]{comparacao_classico_quantico_nu_0.01_E110.pdf}
-  \caption{Classical (blue) and hybrid quantum PINN on the FakeBerlin emulator (orange), $\nu = 0.01$,
-  110 epochs, $\Ncol = 10$, for $T = 0.1$ (top) and $T = 1$ (bottom). Left: relative error of the
-  learned $\nu$ in each of the 33 runs per model (3, 7 and 10 neurons or qubits $\times$ 11 seeds); the
-  bars are the medians. Middle: median of the learned $\nu$ over the runs, against the epoch, with the
-  interquartile band. Right: relative $L_2$ error of $u(x, T)$ in each run. Generated by
-  \texttt{run/plots/plot\_inverse\_E110.py}.}
-  \label{fig:comparison}
+\begin{figure*}[t]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/schematic.tex}}
+  \caption{\justifying
+  (a) Architecture of the hybrid quantum PINN (HQPINN, orange) and of its classical counterpart (blue). Both share the classical pre-network $\mathcal N_{\rm pre}$, which maps the periodic features $\bm\xi=(\sin2\pi x,\cos2\pi x,t/T)$ to the angles $\bm\theta\in\mathbb R^n$, and the classical post-network $\mathcal N_{\rm post}$; the initial condition is imposed exactly through Eq.~\eqref{eq:composition}. In the HQPINN the middle block is a \emph{fixed} quantum circuit---single-qubit rotations $R_Y(\theta_q)$ followed by $D$ layers of a CNOT brickwork---whose output is the vector of local expectation values $\langle Z_q\rangle$ estimated with $S$ shots; the circuit contains no trainable parameter. In the classical PINN the middle block is a trainable network $\mathcal N_{\rm mid}$ with a bottleneck of width $k=n$.
+  (b) One training epoch. A fresh batch of $N$ collocation points and their five-point finite-difference stencils is evaluated in one forward pass; for the HQPINN the device is measured at the stencil centres (one job per epoch). The derivatives $A_i$ and $B_i$ enter both the loss of the network step (AdamW) and the closed-form variable-projection estimate $\nu^\star$, towards which $\log\nu$ is relaxed. For the HQPINN, gradients with respect to $\bm\theta$ are propagated through a calibrated trigonometric surrogate $\hat f$ of the device (straight-through estimator, dashed lines), which is refitted every $K_{\rm fit}$ epochs from the accumulated measurements.}
+  \label{fig:schematic}
 \end{figure*}
 
-\begin{table}
-  \caption{Relative error of the learned $\nu$ (median and 90th percentile) and median relative $L_2$
-  error of $u(x, T)$ over 33 runs per model ($\nu = 0.01$, 110 epochs).}
-  \label{tab:results}
-  \begin{ruledtabular}
-  \begin{tabular}{llccc}
-    $T$ & model & $\nu$, median & $\nu$, p90 & $L_2$ of $u$ \\
-    \hline
-    0.1 & classical & 7.3\% & 20\% & 0.014 \\
-    0.1 & quantum   & 6.0\% & 15\% & 0.021 \\
-    1   & classical & 21.5\% & 44\% & 0.073 \\
-    1   & quantum   & 30.2\% & 53\% & 0.107 \\
-  \end{tabular}
-  \end{ruledtabular}
+\subsection{Classical PINN}\label{sec:classical}
+
+In the classical PINN the middle block is a trainable network,
+\begin{equation}
+  \mathcal M_{\rm C}(\bm\theta)=\mathcal N_{\rm mid}(\bm\theta;\bm\chi):\ \mathbb R^k\to\mathbb R^k,
+  \label{eq:bottleneck}
+\end{equation}
+with one hidden layer of 10 $\tanh$ units, so that the full classical model is the $\tanh$ network $3\to10\to k\to10\to k\to10\to1$ with a bottleneck of width $k$. Matching the bottleneck to the number of qubits, $k=n$, makes the information flowing between the two classical networks pass through a latent space of the same dimension in both models. The classical model has $42k+71$ trainable parameters (197, 365 and 491 for $k=3,7,10$), of which $21k+10$ belong to the middle block (Table~\ref{tab:arch}).
+
+\subsection{Hybrid quantum PINN with a fixed quantum layer}\label{sec:hqpinn}
+
+In the hybrid model (HQPINN) the latent vector is used as the set of rotation angles of an $n$-qubit circuit,
+\begin{equation}
+  U(\bm\theta)=W_{\rm brick}^{D}\,\bigotimes_{q=1}^{n}R_Y(\theta_q),\qquad R_Y(\theta)=e^{-i\theta Y/2},
+  \label{eq:circuit}
+\end{equation}
+where $W_{\rm brick}$ is one layer of a brickwork of nearest-neighbour CNOT gates (first on pairs $(1,2),(3,4),\dots$, then on $(2,3),(4,5),\dots$) and $D$ is the number of such layers. \TODO{confirmar $D$ = \texttt{FIXED\_LAYER\_REPEATS}, o padr\~ao de \texttt{FIXED\_LAYER} e \texttt{INPUT\_ROTATION\_AXIS} em \texttt{Inverser\_quantum\_exact\_pinn\_paralelo.py}.} The circuit acts on $|0\rangle^{\otimes n}$ and the layer output is the vector of local magnetizations,
+\begin{equation}
+  y_q(\bm\theta)=\operatorname{Tr}\!\left[Z_q\,\mathcal E_{\bm\theta}\big(|0\rangle\langle0|^{\otimes n}\big)\right],\qquad q=1,\dots,n,
+  \label{eq:expval}
+\end{equation}
+where $\mathcal E_{\bm\theta}$ is the (noisy) channel actually implemented by the device. On hardware $y_q$ is estimated from $S$ shots, $\hat y_q=y_q+\xi_q$, with $\mathbb E[\xi_q]=0$ and $\operatorname{Var}[\xi_q]=(1-y_q^2)/S\le 1/S$.
+
+The defining feature of the model is that \emph{the circuit has no free parameter}: all trainable parameters live in the classical networks, and the quantum layer acts as a fixed nonlinear map $\bm\theta\mapsto\bm y$. The HQPINN therefore has $21n+61$ trainable parameters (124, 208 and 271 for $n=3,7,10$), against $42k+71$ in the classical model of the same width \TODO{confirmar que pr\'e/p\'os-redes do qu\^antico s\~ao $3\to10\to n$ e $n\to10\to1$}. This is the opposite design choice to the variational hybrid PINNs studied so far~\cite{farea2025qcpinn,berger2025trainable,sedykh2024hybrid}, and connects the HQPINN to fixed-substrate approaches such as quantum reservoir computing and extreme learning machines~\cite{mujal2021opportunities} and quanvolutional networks~\cite{henderson2020quanvolutional}, which, however, have not been used to minimize a PDE residual.
+
+\paragraph{Function class.} The structure of the quantum layer is captured by the following statement (proof in Appendix~\ref{app:trig}).
+\begin{proposition}\label{prop:trig}
+Let $\mathcal C_q\subseteq\{1,\dots,n\}$ be the backward causal cone of $Z_q$ in the circuit~\eqref{eq:circuit}. For any noise model in which each gate is followed by a $\bm\theta$-independent, trace-preserving channel acting on the qubits of that gate (including readout errors), $y_q$ depends only on $\{\theta_j\}_{j\in\mathcal C_q}$ and is a multilinear trigonometric polynomial of degree one in each of them,
+\begin{equation}
+  y_q(\bm\theta)=\sum_{\bm\alpha\in\{0,c,s\}^{|\mathcal C_q|}}c^{(q)}_{\bm\alpha}\prod_{j\in\mathcal C_q}g_{\alpha_j}(\theta_j),
+  \label{eq:trigpoly}
+\end{equation}
+with $g_0=1$, $g_c=\cos$, $g_s=\sin$, and device-dependent real coefficients $c^{(q)}_{\bm\alpha}$.
+\end{proposition}
+Equation~\eqref{eq:trigpoly} has three consequences that guide both the theory and the implementation. (i) The quantum layer injects a \emph{finite Fourier} structure into the latent representation~\cite{schuld2021effect}; the entangling depth $D$ controls which products of harmonics of different latent coordinates appear, so entanglement becomes a deliberate architectural knob rather than a by-product of training. (ii) Noise does not change the function class, only the coefficients; this is what allows a calibrated surrogate of the device (Appendix~\ref{sec:hil}). (iii) The quantum layer adds no trainable parameter, so the barren-plateau phenomenon of variational circuits~\cite{mcclean2018barren,cerezo2021cost,holmes2022connecting,ortizmarrero2021entanglement} is absent by construction; what remains is the possible concentration of the map $\bm\theta\mapsto\bm y$ itself, which is controlled by the size of the causal cones.
+\begin{remark}\label{rem:parity}
+A CNOT network acts on the computational basis as a linear map over $\mathrm{GF}(2)$, represented by a binary matrix $M$. For the noiseless circuit~\eqref{eq:circuit} the Heisenberg evolution of $Z_q$ is therefore the Pauli string $Z_{S_q}=\prod_{j\in S_q}Z_j$ with $S_q=\{j: M_{qj}=1\}\subseteq\mathcal C_q$, and
+\begin{equation}
+  y_q(\bm\theta)=\prod_{j\in S_q}\cos\theta_j .
+  \label{eq:parity}
+\end{equation}
+For angles spread over a full period, $\operatorname{Var}[y_q]=2^{-|S_q|}$ and the gradients $\partial y_q/\partial\theta_j$ are suppressed by the same factor: the entangling depth trades expressivity (longer products) against concentration. Equation~\eqref{eq:parity} also defines the natural \emph{classical control} for the HQPINN, namely a middle block with cosine-product activations, which must be included in the comparison \TODO{rodar este controle}.
+\end{remark}
+
+\subsection{Training algorithm}\label{sec:training}
+
+Both models are trained with the same algorithm, sketched in Fig.~\ref{fig:schematic}(b) and given in full in Appendix~\ref{app:training} (Algorithm~\ref{alg:train}); only the hyperparameters, selected independently for each model with the same protocol (Sec.~\ref{sec:protocol}), differ. At every epoch a fresh batch of $N$ collocation points is drawn, and the same points enter both the PDE residual, evaluated by second-order finite differences on a five-point stencil, and the data term. The networks are updated with AdamW on the mean absolute error of the residual, whose weight is ramped up from zero, plus a fixed-weight data term [Eq.~\eqref{eq:loss}]. The viscosity is not updated by gradient descent: since it enters the residual linearly, its $L_1$-optimal value for the current network---the $|B_i|$-weighted median of $A_i/B_i$---is obtained in closed form [Eq.~\eqref{eq:wmed}], and $\log\nu$ is relaxed towards it (variable projection). For the HQPINN the device is measured once per epoch, at the stencil centres only; the neighbouring stencil nodes and the gradients are obtained from a calibrated surrogate of the device based on Eq.~\eqref{eq:trigpoly} [Eq.~\eqref{eq:ste}], which is refitted periodically with the accumulated measurements. This construction avoids both parameter-shift evaluations and the $h^{-2}$ amplification of the shot noise by the finite differences.
+
+\newpage
+% =====================================================================
+\section{Results}\label{sec:results}
+% =====================================================================
+% \TODO{Resultados em hardware real a incluir. Abaixo: cl\'assico (sem ru\'ido) e HQPINN no \emph{fake backend} FakeBerlin (Qiskit Aer, 1024 shots).}
+
+\subsection{Setup}
+Burgers equation with $\nu_{\rm true}=0.1$ and $T=0.1$; $N=10$ collocation points per epoch; $K=110$ epochs; circuit sizes $n\in\{3,7,10\}$ qubits and bottleneck widths $k=n$; test seeds 0, 1, 2 (nine paired runs per model). The device is the noise model of \texttt{ibm\_berlin} (\texttt{FakeBerlin}) simulated with Qiskit Aer~\cite{javadiabhari2024qiskit} with $S=1024$ shots per expectation value. The calibration retained 33, 14 and 9 disjoint chains for $n=3$, 7 and 10, with root-mean-square misfit $3.12\times10^{-2}$, $3.46\times10^{-2}$ and $3.12\times10^{-2}$, i.e., at the shot-noise floor $1/\sqrt S=3.125\times10^{-2}$. Hyperparameters are listed in Table~\ref{tab:hyper}.
+
+\subsection{Identification of the viscosity}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_nu_statistics.pdf}
+  \caption{\justifying Identification of $\nu$ over the nine paired test runs of each model ($n=k\in\{3,7,10\}$, seeds 0--2). (a) Learned viscosity versus epoch: median (line) and min--max range (band). (b) Relative error $|\nu_k-\nu_{\rm true}|/\nu_{\rm true}$: median and interquartile range; dotted line, 5\%. (c) Final relative error of each run, grouped by size; markers identify the seed, horizontal ticks connected by lines are the medians per size. Blue: classical PINN; orange: HQPINN on the fake device.}
+  \label{fig:nu}
+\end{figure*}
+
+\begin{table}[b]
+\caption{\justifying Relative error of the learned viscosity, $\epsilon_\nu$, and relative $L_2$ error of $u(x,T)$ after $K=110$ epochs; test: 9 paired runs (seeds 0--2); selection: 60 runs (seeds 200--219).}
+\label{tab:prelim}
+\setlength{\tabcolsep}{1pt}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+ & HQPINN$^{c}$ & Classical\\
+\colrule
+$\epsilon_\nu$, test$^{b}$ & 1.5 / 3.5 / 7.0\% & 8.4 / 8.6 / 13.8\% \\
+$\epsilon_\nu$, selection$^{b}$ & 2.2 / 2.7 / 7.6\%$^{a}$ & 4.0 / 5.2 / 18.4\% \\
+$\epsilon_{L_2}$, test$^{b}$ & 0.034 / 0.038 / 0.059 & 0.056 / 0.057 / 0.073 \\
+Paired wins ($\epsilon_\nu$; $\epsilon_{L_2}$) & 8/9; 9/9 & 1/9; 0/9\\
+\end{tabular}
+\end{ruledtabular}
+\raggedright\footnotesize $^{a}$On the device proxy (calibrated surrogate + shot noise). $^{b}$Median / mean / max. $^{c}$Fake device (\texttt{FakeBerlin}).
 \end{table}
 
-Figure~\ref{fig:comparison} and Table~\ref{tab:results} summarize the 33 runs of each model. For
-$T = 0.1$ the two models estimate $\nu$ equally well: the quantum PINN has the smaller median error
-(6.0\% against 7.3\%) and fewer large errors, but the difference is not significant ($p = 0.11$). The
-classical PINN fits $u(x, T)$ better ($L_2$ error 0.014 against 0.021, $p < 0.001$). For $T = 1$, with
-the shock, the problem is harder for both models, and the classical PINN is better in $\nu$ (21.5\%
-against 30.2\%, $p = 0.046$) and in $u(x, T)$ (0.073 against 0.107). Both models underestimate $\nu$
-in most of the runs at $T = 1$. With only ten points per epoch, the learned $\nu$ still moves from one
-epoch to the next at the end of the training, so the error of a single run depends on the last
-batches; the comparison therefore relies on many seeds.
+Figure~\ref{fig:nu} and Table~\ref{tab:prelim} summarize the identification of $\nu$ at a fixed budget of 110 epochs. Both models approach $\nu_{\rm true}$ within $\sim20$--30 epochs [Fig.~\ref{fig:nu}(a)], once the residual weight $\rho_k$ has been ramped up. Afterwards their behaviour differs: the median error of the HQPINN keeps decreasing as the relaxation factor $\beta_k$ decays, from 7.7\% at epoch 60 and 5.4\% at epoch 80 to 1.5\% at the end, whereas the classical model stalls at the 8--10\% level [Fig.~\ref{fig:nu}(b)]; over the last 30 epochs the median error is 3.4\% for the HQPINN and 9.9\% for the classical model. The final error is smaller for the HQPINN in 8 of the 9 paired runs (one-sided Wilcoxon signed-rank test, $p=0.006$). The classical model underestimates the viscosity in 7 of the 9 runs ($\hat\nu=0.086$--$0.095$), which points to a systematic bias rather than to noise. The gain of the HQPINN grows with the size of the layer [Fig.~\ref{fig:nu}(c)]: the median error drops from 5.2\% for $n=3$ to 1.5\% for $n=7$ and 10, whereas for the classical model it does not improve with the bottleneck width (8.3\%, 8.4\% and 11.1\% for $k=3,7,10$). Seed 1, which shares the same initial viscosity and collocation sequence in both models, is the hardest case for both. The selection runs (Table~\ref{tab:prelim}, 60 runs per model) confirm the ordering. \TODO{discutir com cuidado: 9 runs; hiperpar\^ametros buscados separadamente; cl\'assico sem ru\'ido.}
 
-\TODO{Dependence on the model size; effect of $\Ncol$ (more points per epoch reduce the error).}
+% \subsection{Reconstruction of the field and adaptation to the device}
 
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{figures/fig_solution_T.pdf}
+%   \caption{\justifying Reconstructed field at $t=T$ for the paired run $n=k=10$, seed 0. (a) Exact solution and predictions of the classical PINN and of the HQPINN evaluated on the fake device. (b) Pointwise error; the dotted line uses the same trained HQPINN weights with the ideal (noiseless) circuit.}
+%   \label{fig:solution}
+% \end{figure}
+
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{figures/fig_l2_device_vs_ideal.pdf}
+%   \caption{\justifying Relative $L_2$ error of $u(x,T)$ for the nine test runs of each model. The HQPINN is evaluated with the calibrated surrogate it was trained through, with the circuit run on the fake device, and with the same weights on the ideal circuit; grey lines pair the device and ideal-circuit evaluations of the same run. Markers identify the seed as in Fig.~\ref{fig:nu}; black ticks are medians.}
+%   \label{fig:l2}
+% \end{figure}
+
+% The field at the final time is reconstructed with $\epsilon_{L_2}$ between $2.3\times10^{-2}$ and $5.9\times10^{-2}$ by the HQPINN and between $4.1\times10^{-2}$ and $7.3\times10^{-2}$ by the classical model, with the HQPINN better in all nine paired runs (Table~\ref{tab:prelim}). Figure~\ref{fig:solution} shows the run $n=k=10$, seed 0: the classical error has smooth lobes of up to $0.05$ (largest near $x\simeq0.9$), whereas the HQPINN error stays below $0.03$ everywhere, with a jagged component that comes from the shot noise of the device evaluation.
+
+% The HQPINN networks are trained \emph{through} the noisy device, so they adapt to its channel $\mathcal E_{\bm\theta}$. Figure~\ref{fig:l2} makes this explicit: when the same weights are combined with the ideal circuit the error increases in 8 of the 9 runs, by a median factor of 1.45, whereas the surrogate reproduces the device within the statistical fluctuations (median $\epsilon_{L_2}=3.3\times10^{-2}$ versus $3.4\times10^{-2}$). This is the behaviour expected from Proposition~\ref{prop:trig}: noise changes the coefficients $c^{(q)}_{\bm\alpha}$ but not the function class, and the post-network learns the map from the coefficients of the actual device. The trained model is therefore tied to the device it was trained on, which makes the periodic refit of the surrogate essential under drift. \TODO{confirmar com o QPU real.}
+
+
+\section{Discussion}\label{sec:discussion}
+
+
+\newpage
+% =====================================================================
 \section{Conclusions}\label{sec:conclusions}
-\TODO{Main findings: tie at $T = 0.1$, classical better at $T = 1$; outlook (more points per epoch, real device).}
+
+
+\newpage
+% =====================================================================
+\begin{appendices}
+% =====================================================================
+
+\section{Exact solution of the benchmark}\label{app:colehopf}
+The Cole--Hopf transformation~\cite{cole1951quasi,hopf1950partial} $u=-2\nu\,\partial_x\ln\varphi$ maps Eq.~\eqref{eq:burgers} onto the heat equation $\partial_t\varphi=\nu\,\partial_x^2\varphi$. For $u(x,0)=\sin(2\pi x)$,
+\begin{equation}
+  \varphi(x,0)=\exp\!\left[-\frac{1}{2\nu}\int_0^x\sin(2\pi s)\,ds\right]\propto e^{z\cos(2\pi x)},
+\end{equation}
+with $z=1/(4\pi\nu)$. Using $e^{z\cos\vartheta}=I_0(z)+2\sum_{m\ge1}I_m(z)\cos m\vartheta$, with $I_m$ the modified Bessel functions, each Fourier mode decays as $e^{-4\pi^2m^2\nu t}$ and
+\begin{equation}
+  u(x,t)=\frac{8\pi\nu\sum_{m\ge1}m\,I_m(z)\,e^{-4\pi^2m^2\nu t}\sin(2\pi m x)}{I_0(z)+2\sum_{m\ge1}I_m(z)\,e^{-4\pi^2m^2\nu t}\cos(2\pi m x)}.
+  \label{eq:colehopf}
+\end{equation}
+The series is evaluated in double precision with exponentially scaled Bessel functions $I_m(z)e^{-z}$ (the common factor cancels) and $m<4z+64$ terms. It reproduces the initial condition to machine precision and satisfies Eq.~\eqref{eq:burgers} to the accuracy of a finite-difference check ($\sim10^{-5}$); at $T=0.1$, $\max_x u\simeq0.669$. The series loses precision for $z\gtrsim16$ ($\nu\lesssim5\times10^{-3}$), where the Gauss--Hermite integral representation~\cite{basdevant1986spectral} must be used instead---a constraint for the stiffness sweep of Fig.~\ref{fig:regime}.
+
+\section{Proof of Proposition~\ref{prop:trig} and light-cone structure}\label{app:trig}
+\emph{Trigonometric structure.} For a single rotation,
+\begin{align}
+  R_Y(\theta)\,\rho\,R_Y^\dagger(\theta)={}&\tfrac12(\rho+Y\rho Y)+\tfrac12\cos\theta\,(\rho-Y\rho Y)\nonumber\\
+  &-\tfrac{i}{2}\sin\theta\,[Y,\rho],
+  \label{eq:ry_channel}
+\end{align}
+so the map $\rho\mapsto R_Y(\theta)\rho R_Y^\dagger(\theta)$ is an affine combination of $\{1,\cos\theta,\sin\theta\}$ with $\theta$-independent superoperators. All other operations---CNOTs, noise channels, readout confusion matrices, and the trace with $Z_q$---are linear and $\theta$-independent. Since each angle appears in exactly one gate, $y_q$ is a sum of products in which every $\theta_j$ contributes exactly one factor in $\{1,\cos\theta_j,\sin\theta_j\}$, which is Eq.~\eqref{eq:trigpoly}.
+
+\emph{Causal cone.} In the Heisenberg picture $y_q=\operatorname{Tr}[\rho_0\,\mathcal E^\dagger_{\bm\theta}(Z_q)]$. The adjoint of a trace-preserving channel is unital, so every gate (and every gate-local noise channel) whose support does not intersect the current support of the evolved operator leaves it unchanged. The support therefore grows only through gates touching it; the set of qubits reached is $\mathcal C_q$, and rotations outside $\mathcal C_q$ drop out. For the brickwork with $D$ layers, $|\mathcal C_q|\le\min(n,4D)$ \TODO{verificar contagem exata para a ordem das subcamadas usada}. Crosstalk or non-local noise invalidates this bound and enlarges the effective cone.
+
+\emph{Noiseless case (Remark~\ref{rem:parity}).} CNOT conjugation maps $Z_c\mapsto Z_c$ and $Z_t\mapsto Z_cZ_t$, so $Z_q$ evolves into a $Z$-string $Z_{S_q}$ whose support is the $q$th row of the GF(2) matrix $M$ of the network. Acting on $\bigotimes_jR_Y(\theta_j)|0\rangle$, $\langle Z_j\rangle=\cos\theta_j$ and the state is a product, which gives Eq.~\eqref{eq:parity}. If $\theta_j$ are independent and uniform on a period, $\mathbb E[\cos^2\theta_j]=1/2$, hence $\operatorname{Var}[y_q]=2^{-|S_q|}$ and $\mathbb E[(\partial_{\theta_j}y_q)^2]=2^{-|S_q|}$.
+
+\emph{Number of coefficients.} Equation~\eqref{eq:trigpoly} has $3^{|\mathcal C_q|}$ coefficients per output, which fixes the minimum number of calibration samples and motivates shallow entangling layers.
+
+\section{Training algorithm}\label{app:training}
+Both models are trained with Algorithm~\ref{alg:train}; for the classical model the branches marked HQPINN are skipped. The four ingredients---collocation and finite differences, the network step, the variable-projection step for $\nu$, and the quantum processor in the loop---are described below, followed by the implementation details of the hardware loop.
+
+\begin{algorithm}[H]
+\caption{Inverse (H)QPINN training}\label{alg:train}
+\small
+\begin{algorithmic}[1]
+\Require epochs $K$, batch size $N$, stencil $(h,\tau)$, schedules $\eta_k,\beta_k,\rho_k$, weight $w_d$, shots $S$, refit period $K_{\rm fit}$
+\State \textbf{HQPINN:} calibration job $\to$ fit surrogate $\hat f$ [Eq.~\eqref{eq:trigpoly}]
+\State initialize $\Theta$; draw $\nu_0\sim\mathcal U(0,1)$
+\For{$k=0,\dots,K-1$}
+  \State draw centres $\{(x_i,t_i)\}_{i=1}^N$; build stencil nodes $\mathcal S$
+  \State $\bm\theta\gets\mathcal N_{\rm pre}(\bm\xi(\mathcal S))$
+  \If{HQPINN}
+     \If{$k>0$ \textbf{and} $k\bmod K_{\rm fit}=0$} refit $\hat f$ \EndIf
+     \State $\hat{\bm y}_c\gets$ QPU$(\bm\theta_c;S)$ \Comment{one job, centres only}
+     \State $\tilde{\bm y}\gets\hat f(\bm\theta)+\sg[\hat{\bm y}_c-\hat f(\bm\theta_c)]$ \Comment{Eq.~\eqref{eq:ste}}
+  \Else \State $\tilde{\bm y}\gets\mathcal N_{\rm mid}(\bm\theta)$
+  \EndIf
+  \State $u\gets$ Eq.~\eqref{eq:composition}; \ $A_i,B_i\gets$ FD$(u)$
+  \State $\Theta\gets$ AdamW$\big(\nabla_\Theta\mathcal L_k;\eta_k\big)$ \Comment{Eq.~\eqref{eq:loss}}
+  \State $\nu^\star\gets\wmed(\{A_i/B_i\};\{|B_i|\})$ \Comment{Eq.~\eqref{eq:wmed}}
+  \State $\log\nu_{k+1}\gets\log\nu_k+\beta_k(\log\nu^\star-\log\nu_k)$
+\EndFor
+\State \textbf{return} $\hat\nu=\nu_K$, $u_\Theta$; validation job on $u(x,T)$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Collocation and finite-difference residual}\label{sec:fd}
+At every epoch $k$ a fresh batch of $N$ points is drawn uniformly, $x_i\in[0,1)$ and $t_i\in[\tau,T-\tau]$. The \emph{same} points are used for the residual and for the data term, so that each evaluation of the model enters both. The derivatives in Eq.~\eqref{eq:residual} are computed by second-order central differences on the five-point cross stencil $\{(x_i,t_i),(x_i\pm h,t_i),(x_i,t_i\pm\tau)\}$ with $h=1/512$ and $\tau=10^{-3}$ (see below); stencil nodes are wrapped modulo 1 in $x$. Finite differences, rather than automatic differentiation, are used because hardware outputs are not differentiable with respect to the inputs, and because all stencil nodes of a batch can be evaluated in a single pass. \TODO{confirmar \texttt{HX}, \texttt{HT} no m\'odulo qu\^antico.}
+
+\emph{Stencil formulas.} On the cross stencil,
+\begin{align}
+  \partial_tu&\approx\frac{u(x,t+\tau)-u(x,t-\tau)}{2\tau},\qquad \partial_xu\approx\frac{u_{+}-u_{-}}{2h},\nonumber\\
+  \partial_x^2u&\approx\frac{u_{+}-2u_0+u_{-}}{h^2},\qquad u_\pm=u(x\pm h,t),
+\end{align}
+with truncation errors $\tfrac{\tau^2}{6}\partial_t^3u$, $\tfrac{h^2}{6}\partial_x^3u$ and $\tfrac{h^2}{12}\partial_x^4u$; for $h=1/512$ and $\tau=10^{-3}$ these are negligible compared with the other errors of the method.
+
+\emph{Why the stencil cannot be measured.} If each node carried independent noise of standard deviation $\sigma_u$ (shot noise $\le1/\sqrt S$ in $y_q$ propagated through $\mathcal N_{\rm post}$), the noise of the estimates would be
+\begin{equation}
+  \operatorname{std}[\partial_xu]=\frac{\sigma_u}{\sqrt2\,h},\qquad \operatorname{std}[\partial_x^2u]=\frac{\sqrt6\,\sigma_u}{h^2}.
+\end{equation}
+With $h=1/512$ and $\sigma_u\sim10^{-2}$ this gives $\operatorname{std}[\partial_x^2u]\sim6\times10^3$, four orders of magnitude above $|\partial_x^2u|\lesssim(2\pi)^2$. Enlarging $h$ to make this tolerable would introduce a truncation bias in $B$ and hence in $\nu^\star$.
+
+\emph{Shared offset.} Eq.~\eqref{eq:ste} assigns the same correction $\Delta_c=\hat{\bm y}^{\,\rm QPU}(\bm\theta_c)-\hat f(\bm\theta_c)$ to the five nodes of the stencil. Writing $\tilde{\bm y}_\pm=\hat f(\bm\theta_\pm)+\Delta_c$ and expanding $\mathcal N_{\rm post}$,
+\begin{equation}
+  u_+-u_-=J(\hat f_c+\Delta_c)\,\big[\hat f(\bm\theta_+)-\hat f(\bm\theta_-)\big]+\mathcal O(h^3),
+\end{equation}
+where $J$ is the Jacobian of $\mathcal N_{\rm post}$ (times $t/T$). The noise enters only through the evaluation point of $J$, so it perturbs the derivatives by a relative amount $\mathcal O(\|J'\|\,\|\Delta_c\|)$ instead of $\mathcal O(\sigma_u/h^2)$; the variation across the stencil is that of the smooth surrogate. The measured value enters directly the data term and the factor $u$ of $u\,\partial_xu$.
+
+\subsection{Loss and network step}
+The network parameters $\Theta=(\bm\phi,\bm\psi)$ [plus $\bm\chi$ in the classical model] are updated with AdamW~\cite{loshchilov2019decoupled} on
+\begin{equation}
+  \mathcal L_k(\Theta)=\rho_k\,\frac1N\sum_{i=1}^N\big|A_i-\nu_kB_i\big|+w_d\,\frac1N\sum_{i=1}^N\big|u_\Theta(x_i,t_i)-u^\star_i\big|,
+  \label{eq:loss}
+\end{equation}
+where $\nu_k$ is held fixed. The mean absolute error is preferred to the mean squared error because it is robust to the heavy-tailed residuals produced by a few badly resolved collocation points and by measurement noise. The residual weight $\rho_k=\min\{1,(k+1)/K_{\rm ramp}\}$ is ramped up so that the networks first fit the data, and the data weight $w_d\gg1$ is fixed. The learning rate follows a cosine decay~\cite{loshchilov2017sgdr} and the gradient norm is clipped.
+
+\subsection{Variable projection for the viscosity}\label{sec:varpro}
+Because $\nu$ enters the residual linearly [Eq.~\eqref{eq:residual}], for a fixed network it can be eliminated in closed form (variable projection~\cite{golub1973differentiation}). Under the $L_1$ norm of Eq.~\eqref{eq:loss},
+\begin{equation}
+  \nu^\star_k=\arg\min_{\nu}\sum_{i=1}^N|A_i-\nu B_i|=\wmed\!\left(\left\{\frac{A_i}{B_i}\right\};\ \{|B_i|\}\right),
+  \label{eq:wmed}
+\end{equation}
+the median of the ratios $A_i/B_i$ weighted by $|B_i|$ (proof below), computed from the same forward pass as the network step and clipped to $[10^{-4},10]$. Rather than jumping to this batch estimate, which fluctuates from batch to batch, the viscosity is relaxed towards it in logarithmic scale,
+\begin{equation}
+  \log\nu_{k+1}=\log\nu_k+\beta_k\big(\log\nu^\star_k-\log\nu_k\big),
+  \label{eq:logrelax}
+\end{equation}
+i.e., $\nu_{k+1}=\nu_k^{1-\beta_k}(\nu^\star_k)^{\beta_k}$, with $\beta_k$ decaying from $\beta_0$ to $\beta_K$ with a cosine schedule. Equation~\eqref{eq:logrelax} is an exponentially weighted geometric average of the batch estimates; it keeps $\nu>0$, is scale invariant, and its effective memory $\sim1/\beta_k$ grows during training, damping the noise of late batches. The initial value $\nu_0$ is drawn uniformly in $(0,1)$.
+
+\emph{Weighted-median solution.}
+Write $\sum_i|A_i-\nu B_i|=\sum_iw_i|r_i-\nu|$ with $r_i=A_i/B_i$ and $w_i=|B_i|$ (points with $B_i=0$ do not depend on $\nu$ and are discarded). This is a convex piecewise-linear function of $\nu$ whose subgradient is $\sum_{r_i<\nu}w_i-\sum_{r_i>\nu}w_i+[-1,1]\sum_{r_i=\nu}w_i$. It contains zero when the weight on each side of $\nu$ is at most half of the total, i.e., at the weighted median of $\{r_i\}$. Points with small curvature $|B_i|$, for which the ratio $A_i/B_i$ is ill-conditioned, receive proportionally small weight. Under the $L_2$ norm the minimizer would instead be $\nu^\star=\sum_iA_iB_i/\sum_iB_i^2$, which is not robust to outliers. In the implementation the ratios are sorted, the cumulative weight is formed, and the first ratio at which it reaches half of the total is returned; the result is clipped to $[10^{-4},10]$ before Eq.~\eqref{eq:logrelax}.
+
+\subsection{Hardware in the loop}\label{sec:hil}
+Running the HQPINN on a quantum processor requires a gradient of the measured outputs with respect to $\bm\theta$, and the finite-difference stencil of Sec.~\ref{sec:fd} would multiply the number of circuits by five. Both problems are solved by Proposition~\ref{prop:trig}:
+\begin{enumerate}
+  \item \emph{Calibration.} Before training, one job per circuit size evaluates the circuit at random angles $\theta_j\sim\mathcal U(-\pi,\pi)$ on every $n$-qubit chain of the chip in parallel. The measured $\langle Z_q\rangle$ are fitted by the trigonometric polynomial~\eqref{eq:trigpoly}, which yields a surrogate $\hat f_q(\bm\theta_{\mathcal C_q})$ of the device; chains whose error score or calibration misfit is anomalous are discarded (Sec.~\ref{sec:hil_impl}).
+  \item \emph{Training.} At each epoch the device is measured only at the $N$ stencil centres $\bm\theta_c$. Every node $\bm\theta$ of the stencil centred at $c$ is then assigned
+  \begin{equation}
+    \tilde{\bm y}(\bm\theta)=\hat f(\bm\theta)+\sg\!\big[\hat{\bm y}^{\,\rm QPU}(\bm\theta_c)-\hat f(\bm\theta_c)\big],
+    \label{eq:ste}
+  \end{equation}
+  where $\sg$ stops the gradient (straight-through estimator~\cite{bengio2013estimating}). At the centre $\tilde{\bm y}=\hat{\bm y}^{\,\rm QPU}$, so the data term and the factor $u$ in $u\,\partial_xu$ use the measured value; across the stencil the variation of $\tilde{\bm y}$ is that of the smooth surrogate, so that the shot noise is \emph{not} amplified by the $h^{-2}$ of the finite differences (see below); and $\partial\tilde{\bm y}/\partial\bm\theta=\partial\hat f/\partial\bm\theta$. Every $K_{\rm fit}$ epochs the surrogate is refitted with the calibration data and all measurements accumulated so far.
+  \item \emph{Validation.} A final job evaluates the trained model on 100 equally spaced points at $t=T$, with the circuit run on the device.
+\end{enumerate}
+With the calibration shared by all runs of a given size, a training run of $K$ epochs costs $K+1$ jobs. Implementation details follow.
+
+\subsection{Implementation of the hardware loop}\label{sec:hil_impl}
+\paragraph{Chains and calibration.} All disjoint chains of $n$ connected qubits are identified on the coupling map, and the circuit is laid out on all of them in parallel, so that a single job yields one sample per chain. Chains whose error score (from the device calibration data) exceeds $0.05\,n$ are discarded. The calibration job evaluates $\approx1024$ random angle configurations per output, $\theta_j\sim\mathcal U(-\pi,\pi)$; the coefficients $c^{(q)}_{\bm\alpha}$ of Eq.~\eqref{eq:trigpoly} are obtained by linear least squares on the features $\bigotimes_{j\in\mathcal C_q}(1,\cos\theta_j,\sin\theta_j)$, fitted jointly over the chains, and chains whose misfit exceeds three times the median are discarded. For \texttt{FakeBerlin} this retains 33, 14 and 9 chains for $n=3,7,10$, with misfit at the shot-noise floor. The calibration is cached and shared by all runs of a given size. \TODO{detalhar \texttt{find\_chains}, \texttt{screen\_chains} e \texttt{fit\_surrogate} (Inverser\_quantum\_hardware\_pinn.py).}
+
+\paragraph{Training.} One job per epoch evaluates the $N=10$ stencil centres with $S=1024$ shots each (precision $1/32$ per expectation value). Gradients follow Eq.~\eqref{eq:ste}. Every $K_{\rm fit}=10$ epochs the surrogate is refitted with the calibration data and all measurements accumulated during training.
+
+\paragraph{Validation.} One job evaluates $u(x,T)$ on 100 points, with one replica per chain. Three versions are reported: the model with the circuit run on the device ($\epsilon_{L_2}^{\rm QPU}$), the model with the surrogate it was trained through, and the same weights with the ideal circuit. \TODO{confirmar se as r\'eplicas s\~ao promediadas.}
+
+\paragraph{Device model, real hardware and cost.} \texttt{FakeBerlin} reproduces the calibrated gate and readout errors and the coupling map of \texttt{ibm\_berlin}, but not crosstalk, temporal drift, or the error mitigation of the runtime service. On real hardware the circuits are packed into a runtime \texttt{Session} (limit 2\,h per run) with optional error mitigation \TODO{qual}. A run uses 111 jobs (110 training + 1 validation) besides the shared calibration. Wall-clock time per run on the simulator is 589--606\,s ($n=3,7$) and 752--772\,s ($n=10$), versus 0.23--2.4\,s for the classical model.
+
+\section{Architectures and hyperparameters}\label{app:hyper}
+
+\begin{table}[h]
+\caption{\justifying Network architectures (all hidden layers $\tanh$, linear outputs).}
+\label{tab:arch}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+ & HQPINN & Classical\\
+\colrule
+Input features & $\bm\xi$, Eq.~\eqref{eq:composition} & same\\
+$\mathcal N_{\rm pre}$ & $3\to10\to n$ & $3\to10\to k$ \\
+Middle block & $R_Y$ + CNOT$^{D}$, $\langle Z\rangle$ & $k\to10\to k$ \\
+$\mathcal N_{\rm post}$ & $n\to10\to1$ & $k\to10\to1$ \\
+Params.\ in middle block & 0 & $21k+10$ \\
+Total params ($n,k=3,7,10$) & 124, 208, 271$^{a}$ & 197, 365, 491 \\
+Output & $\sin2\pi x+(t/T)\,\mathcal N(\bm\xi)$ & same\\
+\end{tabular}
+\end{ruledtabular}
+\raggedright\footnotesize $^{a}$Assuming the same pre/post networks as the classical model (to be confirmed); the learnable $\nu$ is not counted.
+\end{table}
+
+\begin{table}[h]
+\caption{\justifying Hyperparameters, selected independently for each model with the protocol of Sec.~\ref{sec:protocol}. With the hyperparameters of the HQPINN, the classical model reaches a median $\epsilon_\nu$ of 6.7\% on the selection seeds, versus 4.0\% with its own.}
+\label{tab:hyper}
+\setlength{\tabcolsep}{2pt}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+ & HQPINN & Classical\\
+\colrule
+Epochs $K$ & 110 & 110\\
+Batch $N$ & 10 & 10\\
+Stencil $(h,\tau)$ & $(1/512,\,10^{-3})$ & $(1/512,\,10^{-3})$\\
+lr, initial & $3.07\times10^{-2}$ & $2.53\times10^{-2}$\\
+lr, final & $1.2\times10^{-3}$ & $3.2\times10^{-4}$\\
+AdamW $(\beta_1,\beta_2)$ & (0.77, 0.99) & (0.73, 0.99)\\
+Weight decay & $6.4\times10^{-6}$ & $9.3\times10^{-4}$\\
+Gradient-norm clip & 10 & 10\\
+Data weight $w_d$ & 85.8 & 37.8\\
+Residual ramp $K_{\rm ramp}$ & 20 & 10\\
+Varpro $\beta$, initial (final) & 0.97 (0.128) & 0.50 (0.163)\\
+$\nu^\star$ clip & $[10^{-4},10]$ & $[10^{-4},10]$\\
+Shots $S$ & 1024 & --\\
+Surrogate refit $K_{\rm fit}$ & 10 & --\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\section{Per-seed results}\label{app:seeds}
+\begin{table}[h]
+\caption{\justifying Learned $\hat\nu$ (relative error) on the test seeds after $K=110$ epochs. Initial values: $\nu_0=0.549$, 0.417 and 0.436 for seeds 0, 1 and 2 in both models.}
+\label{tab:seeds}
+\setlength{\tabcolsep}{2pt}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+ & seed 0 & seed 1 & seed 2\\
+\colrule
+HQPINN, $n=3$ & 0.1052 (5.2\%) & 0.0930 (7.0\%) & 0.1000 (0.0\%)\\
+HQPINN, $n=7$ & 0.0988 (1.2\%) & 0.0932 (6.8\%) & 0.1015 (1.5\%)\\
+HQPINN, $n=10$ & 0.1015 (1.5\%) & 0.0934 (6.6\%) & 0.0985 (1.5\%)\\
+\colrule
+Classical, $k=3$ & 0.1043 (4.3\%) & 0.0868 (13.2\%) & 0.0917 (8.3\%)\\
+Classical, $k=7$ & 0.0954 (4.6\%) & 0.0862 (13.8\%) & 0.0916 (8.4\%)\\
+Classical, $k=10$ & 0.1020 (2.0\%) & 0.0889 (11.1\%) & 0.0882 (11.8\%)\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\newpage
+
+
+
+\section{Per-seed results}\label{app:seeds}
+\begin{table*}[h]
+\caption{\justifying Learned $\hat\nu$ and, in parentheses, its relative error in \% on the test seeds after $K=110$ epochs, for the final times $T=0.1$ and $T=1.0$ and the true viscosities $\nu=0.1$ and $\nu=0.01$. The median column is the median relative error (\%) over the three seeds. In each case ($T$, $\nu$), the best HQPINN result is shown in \textcolor{red}{red}, the best classical result in \textcolor{blue}{blue}, and the better of the two in bold. Initial values: $\nu_0=0.549$, 0.417 and 0.436 for seeds 0, 1 and 2 in both models and all cases.}
+\label{tab:seeds}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lcccccccc}
+ & \multicolumn{4}{c}{$T=0.1$} & \multicolumn{4}{c}{$T=1.0$}\\
+\cline{2-5}\cline{6-9}
+ & seed 0 & seed 1 & seed 2 & median (\%) & seed 0 & seed 1 & seed 2 & median (\%)\\
+\colrule
+\multicolumn{9}{c}{$\nu=0.1$}\\
+\colrule
+HQPINN, $n=3$    & 0.0993 (0.7) & 0.0987 (1.3) & 0.1010 (1.0) & 1.0 & 0.0317 (68.3) & 0.0287 (71.3) & 0.0302 (69.8) & 69.8\\
+HQPINN, $n=7$    & \textcolor{red}{0.0997 (0.3)} & 0.1004 (0.4) & 0.1015 (1.5) & \textcolor{red}{\textbf{0.4}} & 0.0369 (63.1) & 0.0059 (94.1) & 0.0492 (50.8) & 63.1\\
+HQPINN, $n=10$   & 0.1016 (1.6) & 0.0993 (0.7) & 0.1006 (0.6) & 0.7 & 0.0419 (58.1) & 0.0489 (51.1) & \textcolor{red}{0.0500 (50.0)} & \textcolor{red}{51.1}\\
+Classical, $k=3$ & \textcolor{blue}{\textbf{0.0999 (0.1)}} & 0.1006 (0.6) & 0.1019 (1.9) & \textcolor{blue}{0.6} & 0.0953 (4.7) & 0.0930 (7.0) & 0.0704 (29.6) & \textcolor{blue}{\textbf{7.0}}\\
+Classical, $k=7$ & 0.1013 (1.3) & 0.1013 (1.3) & 0.1015 (1.5) & 1.3 & 0.0870 (13.0) & 0.0798 (20.2) & 0.0654 (34.6) & 20.2\\
+Classical, $k=10$& 0.1006 (0.6) & 0.1012 (1.2) & 0.1014 (1.4) & 1.2 & \textcolor{blue}{\textbf{0.0963 (3.7)}} & 0.0820 (18.0) & 0.0658 (34.2) & 18.0\\
+\colrule
+\multicolumn{9}{c}{$\nu=0.01$}\\
+\colrule
+HQPINN, $n=3$    & 0.0105 (5.0) & \textcolor{red}{\textbf{0.0102 (1.7)}} & 0.0125 (25.1) & 5.0 & 0.0120 (19.7) & 0.0058 (41.6) & 0.0149 (48.6) & 41.6\\
+HQPINN, $n=7$    & 0.0096 (4.2) & 0.0102 (2.2) & 0.0109 (8.8) & \textcolor{red}{\textbf{4.2}} & 0.0139 (39.0) & 0.0136 (36.4) & 0.0022 (78.3) & 39.0\\
+HQPINN, $n=10$   & 0.0110 (9.7) & 0.0116 (15.7) & 0.0114 (14.1) & 14.1 & \textcolor{red}{0.0112 (12.0)} & 0.0080 (20.0) & 0.0038 (62.0) & \textcolor{red}{\textbf{20.0}}\\
+Classical, $k=3$ & 0.0054 (46.1) & 0.0014 (86.2) & 0.0066 (34.1) & 46.1 & 0.0128 (27.8) & \textcolor{blue}{\textbf{0.0105 (5.0)}} & 0.0038 (62.4) & \textcolor{blue}{27.8}\\
+Classical, $k=7$ & \textcolor{blue}{0.0110 (10.3)} & 0.0069 (30.8) & 0.0229 (129.1) & 30.8 & 0.0048 (51.9) & 0.0051 (48.7) & 0.0056 (44.0) & 48.7\\
+Classical, $k=10$& 0.0042 (57.9) & 0.0081 (19.2) & 0.0128 (28.3) & \textcolor{blue}{28.3} & 0.0061 (38.8) & 0.0066 (34.2) & 0.0048 (51.7) & 38.8\\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+\end{appendices}
 
 \bibliography{references}
 

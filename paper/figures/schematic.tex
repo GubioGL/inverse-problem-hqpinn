@@ -1,0 +1,134 @@
+% =====================================================================
+%  Fig. 1 -- Hybrid quantum PINN vs classical PINN: architecture (a)
+%            and training loop (b). Pure TikZ, compiles on Overleaf.
+% =====================================================================
+\begin{tikzpicture}[
+  font=\footnotesize,
+  >={Stealth[length=2.2mm]},
+  box/.style={draw, rounded corners=3pt, thick, align=center, fill=white},
+  qbox/.style={draw=qcol, rounded corners=4pt, very thick, fill=qcol!6},
+  cbox/.style={draw=ccol, rounded corners=4pt, very thick, fill=ccol!6},
+  nbox/.style={draw=gray!70, rounded corners=4pt, thick, fill=gray!6},
+  tbox/.style={draw, rounded corners=3pt, thick, align=center, fill=white,
+               text width=3.05cm, minimum height=1.25cm, inner sep=3pt},
+  neuron/.style={circle, draw=gray!70!black, fill=white, inner sep=0pt, minimum size=2.6mm},
+  qwire/.style={draw=black!80, thick},
+  gate/.style={draw=qcol!80!black, fill=white, thick, minimum width=9.5mm,
+               minimum height=3.6mm, inner sep=0pt, font=\scriptsize},
+  flow/.style={->, thick},
+  dflow/.style={->, thick, dashed},
+]
+
+% ---------------------------------------------------------------------
+% (a) Architecture
+% ---------------------------------------------------------------------
+\node[anchor=west, font=\small\bfseries] at (-0.6,6.25) {(a) Architecture};
+
+% input
+\node[circle, draw, thick, minimum size=9mm, fill=white, inner sep=1pt, font=\scriptsize] (in) at (0,2.9) {$\bm\xi(x,t)$};
+
+% pre-network
+\node[nbox, minimum width=2.5cm, minimum height=3.2cm] (pre) at (2.45,2.9) {};
+\node[font=\footnotesize\bfseries, above=1pt of pre.north] (prelab) {Pre-network};
+\node[below=1pt of pre.south] {$\bm\theta=\mathcal N_{\rm pre}(x,t;\bm\phi)$};
+\foreach \i in {1,...,4}{ \node[neuron] (pa\i) at (1.75,1.85+0.55*\i) {}; }
+\foreach \i in {1,...,5}{ \node[neuron] (pb\i) at (2.45,1.55+0.55*\i) {}; }
+\foreach \i in {1,...,4}{ \node[neuron] (pc\i) at (3.15,1.85+0.55*\i) {}; }
+\foreach \i in {1,...,4}{\foreach \j in {1,...,5}{ \draw[gray!55] (pa\i)--(pb\j); }}
+\foreach \i in {1,...,5}{\foreach \j in {1,...,4}{ \draw[gray!55] (pb\i)--(pc\j); }}
+\draw[flow] (in) -- (pre.west);
+
+% --- quantum layer --------------------------------------------------
+\node[qbox, minimum width=5.7cm, minimum height=3.0cm] (qb) at (7.80,4.10) {};
+\node[anchor=north west, font=\footnotesize\bfseries, text=qcol!80!black]
+     at (qb.north west) {Quantum layer (fixed circuit)};
+\foreach \q/\y in {1/4.85,2/4.40,3/3.95,4/3.50}{
+   \draw[qwire] (5.55,\y) -- (9.95,\y);
+   \node[anchor=east, font=\scriptsize] at (5.55,\y) {$|0\rangle$};
+   \node[gate] at (6.15,\y) {$R_Y(\theta_{\q})$};
+}
+% CNOT brickwork, two sub-layers, repeated D times
+\newcommand{\cnot}[3]{% x, ycontrol, ytarget
+  \fill (#1,#2) circle (1.6pt);
+  \draw[thick] (#1,#2) -- (#1,#3);
+  \draw[thick, fill=white] (#1,#3) circle (1.25mm);
+  \draw[thick] (#1-0.125,#3) -- (#1+0.125,#3) (#1,#3-0.125) -- (#1,#3+0.125);}
+\cnot{7.00}{4.85}{4.40}
+\cnot{7.00}{3.95}{3.50}
+\cnot{7.55}{4.40}{3.95}
+\cnot{8.10}{4.85}{4.40}
+\cnot{8.10}{3.95}{3.50}
+\cnot{8.65}{4.40}{3.95}
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, thick]
+     (6.80,3.25) -- (8.85,3.25) node[midway, below=1pt, font=\scriptsize, xshift=-4mm] {CNOT brickwork $\times D$};
+% meters
+\foreach \y in {4.85,4.40,3.95,3.50}{
+   \draw[thick, fill=white] (9.45,\y-0.17) rectangle (9.95,\y+0.17);
+   \draw (9.52,\y-0.08) arc (180:0:0.18);
+   \draw[->, >=Latex] (9.70,\y-0.08) -- ++(55:0.21);
+}
+\node[font=\scriptsize, align=center, text=qcol!80!black] at (9.70,2.95) {$\langle Z_q\rangle$, $S$ shots};
+
+% --- classical bottleneck -------------------------------------------
+\node[cbox, minimum width=5.7cm, minimum height=1.65cm] (cb) at (7.80,1.05) {};
+\node[anchor=north west, font=\footnotesize\bfseries, text=ccol!80!black]
+     at (cb.north west) {Classical bottleneck ($k$ neurons)};
+\foreach \i in {1,...,4}{ \node[neuron, draw=ccol] (ca\i) at (6.10,0.12+0.27*\i) {}; }
+\foreach \i in {1,...,4}{ \node[neuron, draw=ccol] (cc\i) at (7.10,0.12+0.27*\i) {}; }
+\foreach \i in {1,...,4}{\foreach \j in {1,...,4}{ \draw[ccol!45] (ca\i)--(cc\j); }}
+\node[anchor=west, font=\scriptsize, align=left] at (7.55,0.78) {$\bm h=\mathcal N_{\rm mid}(\bm\theta;\bm\chi)$\\ MLP $k\!\to\!10\!\to\!k$, $k=n$};
+
+% split arrows
+\draw[flow, qcol!80!black] (pre.east) ++(0,0.25) -- ++(0.45,0) |- (qb.west);
+\draw[flow, ccol!80!black] (pre.east) ++(0,-0.25) -- ++(0.45,0) |- (cb.west);
+\node[font=\scriptsize\itshape, rotate=90, text=qcol!80!black] at (4.40,3.65) {hybrid};
+\node[font=\scriptsize\itshape, rotate=90, text=ccol!80!black] at (4.40,1.75) {classical};
+
+% post-network
+\node[nbox, minimum width=2.2cm, minimum height=3.2cm] (post) at (12.55,2.9) {};
+\node[font=\footnotesize\bfseries, above=1pt of post.north] (postlab) {Post-network};
+\node[below=1pt of post.south] {$\mathcal N_{\rm post}(\,\cdot\,;\bm\psi)$};
+\foreach \i in {1,...,4}{ \node[neuron] (qa\i) at (12.05,1.85+0.55*\i) {}; }
+\foreach \i in {1,...,4}{ \node[neuron] (qc\i) at (13.05,1.85+0.55*\i) {}; }
+\foreach \i in {1,...,4}{\foreach \j in {1,...,4}{ \draw[gray!55] (qa\i)--(qc\j); }}
+\draw[flow, qcol!80!black] (qb.east) -- ++(0.35,0) |- ([yshift=0.25cm]post.west);
+\draw[flow, ccol!80!black] (cb.east) -- ++(0.35,0) |- ([yshift=-0.25cm]post.west);
+
+% output
+\node[circle, draw, thick, minimum size=10mm, fill=white] (out) at (14.85,2.9) {$u_{\Theta}$};
+\draw[flow] (post.east) -- (out);
+
+% ---------------------------------------------------------------------
+% (b) Training loop (identical for both models)
+% ---------------------------------------------------------------------
+\node[anchor=west, font=\small\bfseries] at (-0.6,-0.45) {(b) Training loop (one epoch, identical for both models)};
+
+\node[tbox] (b1) at (1.30,-2.35) {\textbf{Collocation batch}\\ $N$ fresh points $(x_i,t_i)$ + FD stencil nodes};
+\node[tbox] (b2) at (5.20,-2.35) {\textbf{Forward pass}\\ $u_\Theta$ on all nodes\\ (hybrid: centres on QPU)};
+\node[tbox] (b3) at (9.10,-2.35) {\textbf{FD derivatives}\\ $A_i=u_t+uu_x$\\ $B_i=u_{xx}$ (5-pt cross)};
+\node[tbox, text width=3.4cm] (b4) at (13.15,-2.35) {\textbf{Loss}\\ $\rho_k\langle|A-\nu_kB|\rangle+w_d\langle|u-u^\star|\rangle$};
+
+\node[tbox, draw=qcol!80!black] (b8) at (5.20,-4.55) {\textbf{QPU surrogate} $\hat f$\\ trig.\ degree 1 per angle; refit every $K_{\rm fit}$};
+\node[tbox, text width=3.6cm] (b7) at (9.10,-4.55) {\textbf{$\nu$-step} (var.\ proj.)\\ $\nu^\star=\mathrm{wmed}\!\left(\tfrac{A_i}{B_i};|B_i|\right)$\\[1pt] {\scriptsize $\log\nu\!\leftarrow\!\log\nu+\beta_k(\log\nu^\star\!-\!\log\nu)$}};
+\node[tbox, text width=3.4cm] (b6) at (13.15,-4.55) {\textbf{Network step}\\ AdamW on $(\bm\phi,\bm\psi)$,\\ cosine schedule, clipping};
+\node[tbox, dotted, fill=gray!4] (b5) at (1.30,-4.55)
+      {\textbf{Schedules}\\ \scriptsize $\eta_k,\beta_k$: cosine decay\\ \scriptsize $\rho_k$: residual ramp $0\!\to\!1$};
+
+\draw[flow] (b1) -- (b2);
+\draw[flow] (b2) -- (b3);
+\draw[flow] (b3) -- (b4);
+\draw[flow] (b4) -- (b6);
+\draw[flow] (b3) -- node[right, font=\scriptsize]{$A_i,B_i$} (b7);
+\draw[flow] (b7.north east) -- node[above left=-1pt, font=\scriptsize, pos=0.55]{$\nu_{k}$} (b4.south west);
+\draw[dflow, qcol!80!black] (b2) -- node[right, font=\scriptsize, align=left]{$y_{\rm QPU}$} (b8);
+\draw[dflow, qcol!80!black] (b8.south) -- ++(0,-0.40) -| node[pos=0.25, below, font=\scriptsize]{$\partial\hat f/\partial\bm\theta$ (straight-through)} (b6.south);
+% data arrow
+\draw[flow] (b1.north) -- ++(0,0.35) -| node[pos=0.25, above, font=\scriptsize]{data $u^\star_i$ at the same points (Cole--Hopf / measured)} (b4.north);
+% update back to (a)
+\draw[flow, gray!70!black] (b6.east) -- (15.65,-4.55) -- (15.65,6.0) -- (2.45,6.0) -- (prelab.north);
+\draw[flow, gray!70!black] (12.55,6.0) -- (postlab.north);
+\node[font=\scriptsize, text=gray!50!black, fill=white, inner sep=1pt] at (10.4,6.0) {update $\bm\phi,\bm\psi$ (and $\bm\chi$)};
+% next epoch
+\draw[->, thick, gray!70!black] (b5.north) -- node[right, font=\scriptsize, text=gray!50!black]{next epoch} (b1.south);
+
+\end{tikzpicture}
