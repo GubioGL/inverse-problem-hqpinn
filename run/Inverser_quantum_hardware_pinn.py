@@ -365,6 +365,8 @@ def network_angles(model, x, t):
 def network_output(model, x, t, q):
     """u(x,t) from given quantum features q (same as model.forward after the circuit)."""
     q = tc.as_tensor(q, dtype=model.post[0].weight.dtype)
+    if not getattr(model, "hard_ic", True):
+        return model.post(q)
     return initial_condition(x, L=model.L) + (t / model.Tfin) * model.post(q)
 
 

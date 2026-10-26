@@ -14,14 +14,25 @@
   "lr_nu_min": 0.128,
   "inner_steps": 16
  },
+ "adjustments": {
+  "hard_ic": false,
+  "n_ic": 10,
+  "w_ic": 10.0,
+  "warmup": 10,
+  "plateau": {
+   "patience": 5,
+   "factor": 1.5,
+   "threshold": 0.01
+  }
+ },
  "nu_true": 0.01,
  "Tfin": 1.0,
  "n_collocation": 10,
  "epochs": 110,
  "data": "exact solution at the collocation points",
- "nu_rel_err_median": 0.38988262042403216,
- "nu_rel_err_mean": 0.39731452976249987,
- "nu_rel_err_max": 0.782847729511559,
+ "nu_rel_err_median": 0.3021012283861637,
+ "nu_rel_err_mean": 0.3224803764993946,
+ "nu_rel_err_max": 0.7111981501802802,
  "runs": [
   {
    "n_qubits": 3,
@@ -30,15 +41,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.5488135039273248,
-   "nu": 0.01196704525500536,
-   "nu_rel_err": 0.19670452550053594,
-   "rel_l2_T_qpu": 0.9727263894711541,
-   "rel_l2_T_measured_model": 0.99074608274137,
-   "rel_l2_T_ideal_circuit": 0.8905592165584593,
+   "nu": 0.012717683799564838,
+   "nu_rel_err": 0.27176837995648384,
+   "rel_l2_T_qpu": 0.10727659259635612,
+   "rel_l2_T_measured_model": 0.11115691941095124,
+   "rel_l2_T_ideal_circuit": 0.10941540197894101,
    "chains": 33,
-   "fit_rms_calibration": 0.03193092258849575,
+   "fit_rms_calibration": 0.030937848907000035,
    "n_jobs": 111,
-   "time_s": 506.1327896118164
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 274.6629819869995
   },
   {
    "n_qubits": 3,
@@ -47,15 +69,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.417022004702574,
-   "nu": 0.0058419834822416306,
-   "nu_rel_err": 0.41580165177583694,
-   "rel_l2_T_qpu": 0.5661463643923216,
-   "rel_l2_T_measured_model": 0.5532104852314418,
-   "rel_l2_T_ideal_circuit": 0.43561190353790563,
+   "nu": 0.005347073078155518,
+   "nu_rel_err": 0.46529269218444824,
+   "rel_l2_T_qpu": 0.11456313691202945,
+   "rel_l2_T_measured_model": 0.11529779311168123,
+   "rel_l2_T_ideal_circuit": 0.1372998588428475,
    "chains": 33,
-   "fit_rms_calibration": 0.03193092258849575,
+   "fit_rms_calibration": 0.030937848907000035,
    "n_jobs": 111,
-   "time_s": 528.9479343891144
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 279.6230900287628
   },
   {
    "n_qubits": 3,
@@ -64,15 +97,250 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.43599490214200376,
-   "nu": 0.014856155030429363,
-   "nu_rel_err": 0.48561550304293627,
-   "rel_l2_T_qpu": 0.3723136925888379,
-   "rel_l2_T_measured_model": 0.3699775827121996,
-   "rel_l2_T_ideal_circuit": 0.3923924674004349,
+   "nu": 0.007205745205283165,
+   "nu_rel_err": 0.2794254794716835,
+   "rel_l2_T_qpu": 0.11750050941508319,
+   "rel_l2_T_measured_model": 0.1121475693283364,
+   "rel_l2_T_ideal_circuit": 0.11198129132921436,
    "chains": 33,
-   "fit_rms_calibration": 0.03193092258849575,
+   "fit_rms_calibration": 0.030937848907000035,
    "n_jobs": 111,
-   "time_s": 515.4277477264404
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 262.74546456336975
+  },
+  {
+   "n_qubits": 3,
+   "seed": 3,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.0050348988734185696,
+   "nu_rel_err": 0.49651011265814304,
+   "rel_l2_T_qpu": 0.13008711576609272,
+   "rel_l2_T_measured_model": 0.1216565303656185,
+   "rel_l2_T_ideal_circuit": 0.11759376654344601,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 346.9976489543915
+  },
+  {
+   "n_qubits": 3,
+   "seed": 4,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.011543236672878265,
+   "nu_rel_err": 0.1543236672878265,
+   "rel_l2_T_qpu": 0.10274017137851478,
+   "rel_l2_T_measured_model": 0.10307077510606992,
+   "rel_l2_T_ideal_circuit": 0.12802658950225304,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 342.4474346637726
+  },
+  {
+   "n_qubits": 3,
+   "seed": 5,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.01112145185470581,
+   "nu_rel_err": 0.11214518547058103,
+   "rel_l2_T_qpu": 0.05540569971464862,
+   "rel_l2_T_measured_model": 0.051178947961744777,
+   "rel_l2_T_ideal_circuit": 0.05247320372041336,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 339.46568059921265
+  },
+  {
+   "n_qubits": 3,
+   "seed": 6,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.00710575794801116,
+   "nu_rel_err": 0.289424205198884,
+   "rel_l2_T_qpu": 0.08252839855799872,
+   "rel_l2_T_measured_model": 0.08626531988095403,
+   "rel_l2_T_ideal_circuit": 0.10682028497444165,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 348.611279964447
+  },
+  {
+   "n_qubits": 3,
+   "seed": 7,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.0063063763082027435,
+   "nu_rel_err": 0.36936236917972565,
+   "rel_l2_T_qpu": 0.1375990412929645,
+   "rel_l2_T_measured_model": 0.1346488187887864,
+   "rel_l2_T_ideal_circuit": 0.14360478174753893,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 331.61784768104553
+  },
+  {
+   "n_qubits": 3,
+   "seed": 8,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.003252987749874592,
+   "nu_rel_err": 0.6747012250125408,
+   "rel_l2_T_qpu": 0.145798271818193,
+   "rel_l2_T_measured_model": 0.1400297830835992,
+   "rel_l2_T_ideal_circuit": 0.19263618740063926,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 336.17643308639526
+  },
+  {
+   "n_qubits": 3,
+   "seed": 9,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.004706191830337048,
+   "nu_rel_err": 0.5293808169662952,
+   "rel_l2_T_qpu": 0.14058501926982733,
+   "rel_l2_T_measured_model": 0.13875210127833734,
+   "rel_l2_T_ideal_circuit": 0.19609553479269537,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 355.433705329895
+  },
+  {
+   "n_qubits": 3,
+   "seed": 10,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.771320643266746,
+   "nu": 0.0056555685587227345,
+   "nu_rel_err": 0.43444314412772655,
+   "rel_l2_T_qpu": 0.1027441887258981,
+   "rel_l2_T_measured_model": 0.09859017238798767,
+   "rel_l2_T_ideal_circuit": 0.11978901585972639,
+   "chains": 33,
+   "fit_rms_calibration": 0.030937848907000035,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 342.79552602767944
   },
   {
    "n_qubits": 7,
@@ -81,15 +349,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.5488135039273248,
-   "nu": 0.013898826204240322,
-   "nu_rel_err": 0.38988262042403216,
-   "rel_l2_T_qpu": 0.521441252814187,
-   "rel_l2_T_measured_model": 0.5153979237232542,
-   "rel_l2_T_ideal_circuit": 0.5405428085799215,
+   "nu": 0.01073470152914524,
+   "nu_rel_err": 0.07347015291452405,
+   "rel_l2_T_qpu": 0.14788047416043112,
+   "rel_l2_T_measured_model": 0.1500324945232487,
+   "rel_l2_T_ideal_circuit": 0.12945067993594106,
    "chains": 14,
-   "fit_rms_calibration": 0.03443565916732884,
+   "fit_rms_calibration": 0.0343664903534147,
    "n_jobs": 111,
-   "time_s": 531.7725701332092
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 316.1955499649048
   },
   {
    "n_qubits": 7,
@@ -98,15 +377,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.417022004702574,
-   "nu": 0.013643842190504074,
-   "nu_rel_err": 0.36438421905040735,
-   "rel_l2_T_qpu": 0.2819658787784105,
-   "rel_l2_T_measured_model": 0.2773783086704961,
-   "rel_l2_T_ideal_circuit": 0.3186805983727525,
+   "nu": 0.010940883308649063,
+   "nu_rel_err": 0.09408833086490628,
+   "rel_l2_T_qpu": 0.0711665799487887,
+   "rel_l2_T_measured_model": 0.0738360746542305,
+   "rel_l2_T_ideal_circuit": 0.05057940288695314,
    "chains": 14,
-   "fit_rms_calibration": 0.03443565916732884,
+   "fit_rms_calibration": 0.0343664903534147,
    "n_jobs": 111,
-   "time_s": 524.7914154529572
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 315.34998393058777
   },
   {
    "n_qubits": 7,
@@ -115,15 +405,250 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.43599490214200376,
-   "nu": 0.00217152270488441,
-   "nu_rel_err": 0.782847729511559,
-   "rel_l2_T_qpu": 0.6019113805517803,
-   "rel_l2_T_measured_model": 0.6007837599685756,
-   "rel_l2_T_ideal_circuit": 0.5975829744272588,
+   "nu": 0.008829299360513687,
+   "nu_rel_err": 0.1170700639486313,
+   "rel_l2_T_qpu": 0.12993727919663894,
+   "rel_l2_T_measured_model": 0.1315494340842792,
+   "rel_l2_T_ideal_circuit": 0.13895483127584685,
    "chains": 14,
-   "fit_rms_calibration": 0.03443565916732884,
+   "fit_rms_calibration": 0.0343664903534147,
    "n_jobs": 111,
-   "time_s": 522.6416189670563
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 310.70767855644226
+  },
+  {
+   "n_qubits": 7,
+   "seed": 3,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.008409027010202408,
+   "nu_rel_err": 0.15909729897975924,
+   "rel_l2_T_qpu": 0.21378173982963777,
+   "rel_l2_T_measured_model": 0.21718421959094752,
+   "rel_l2_T_ideal_circuit": 0.18994975521121615,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 405.67589950561523
+  },
+  {
+   "n_qubits": 7,
+   "seed": 4,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.006978987716138363,
+   "nu_rel_err": 0.3021012283861637,
+   "rel_l2_T_qpu": 0.08310451300559392,
+   "rel_l2_T_measured_model": 0.08209842566874531,
+   "rel_l2_T_ideal_circuit": 0.06076268700287362,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 411.2649755477905
+  },
+  {
+   "n_qubits": 7,
+   "seed": 5,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.0064657400362193584,
+   "nu_rel_err": 0.35342599637806416,
+   "rel_l2_T_qpu": 0.11974342639735298,
+   "rel_l2_T_measured_model": 0.11865828763397962,
+   "rel_l2_T_ideal_circuit": 0.10321795034338235,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 403.1280550956726
+  },
+  {
+   "n_qubits": 7,
+   "seed": 6,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.00822911411523819,
+   "nu_rel_err": 0.17708858847618106,
+   "rel_l2_T_qpu": 0.0743047151544564,
+   "rel_l2_T_measured_model": 0.07371232495146118,
+   "rel_l2_T_ideal_circuit": 0.08339507657070322,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 418.21687626838684
+  },
+  {
+   "n_qubits": 7,
+   "seed": 7,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.006137121003121138,
+   "nu_rel_err": 0.38628789968788624,
+   "rel_l2_T_qpu": 0.136858105717913,
+   "rel_l2_T_measured_model": 0.13477471334473926,
+   "rel_l2_T_ideal_circuit": 0.14415244629031915,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 409.3184263706207
+  },
+  {
+   "n_qubits": 7,
+   "seed": 8,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.007256604731082916,
+   "nu_rel_err": 0.2743395268917084,
+   "rel_l2_T_qpu": 0.16651237667449514,
+   "rel_l2_T_measured_model": 0.15918655684858588,
+   "rel_l2_T_ideal_circuit": 0.19221096480848235,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 429.33718061447144
+  },
+  {
+   "n_qubits": 7,
+   "seed": 9,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.010168815962970257,
+   "nu_rel_err": 0.01688159629702566,
+   "rel_l2_T_qpu": 0.12722358183418933,
+   "rel_l2_T_measured_model": 0.12450692608779892,
+   "rel_l2_T_ideal_circuit": 0.16337205572023467,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 443.23437118530273
+  },
+  {
+   "n_qubits": 7,
+   "seed": 10,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.771320643266746,
+   "nu": 0.009174445644021034,
+   "nu_rel_err": 0.08255543559789659,
+   "rel_l2_T_qpu": 0.09014581512421498,
+   "rel_l2_T_measured_model": 0.08393540961526402,
+   "rel_l2_T_ideal_circuit": 0.10030743967795072,
+   "chains": 14,
+   "fit_rms_calibration": 0.0343664903534147,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 435.9277331829071
   },
   {
    "n_qubits": 10,
@@ -132,15 +657,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.5488135039273248,
-   "nu": 0.011200226843357086,
-   "nu_rel_err": 0.12002268433570859,
-   "rel_l2_T_qpu": 0.20481619481926527,
-   "rel_l2_T_measured_model": 0.1991882492017509,
-   "rel_l2_T_ideal_circuit": 0.19884669239571903,
+   "nu": 0.01395552046597004,
+   "nu_rel_err": 0.3955520465970039,
+   "rel_l2_T_qpu": 0.13595743478531705,
+   "rel_l2_T_measured_model": 0.13080877548987094,
+   "rel_l2_T_ideal_circuit": 0.12458083651658408,
    "chains": 9,
-   "fit_rms_calibration": 0.031830099986053254,
+   "fit_rms_calibration": 0.031837362919970275,
    "n_jobs": 111,
-   "time_s": 678.790530204773
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 867.1676950454712
   },
   {
    "n_qubits": 10,
@@ -149,15 +685,26 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.417022004702574,
-   "nu": 0.007996273227036,
-   "nu_rel_err": 0.2003726772964001,
-   "rel_l2_T_qpu": 0.36657726017135245,
-   "rel_l2_T_measured_model": 0.3588518439095192,
-   "rel_l2_T_ideal_circuit": 0.36932566222597174,
+   "nu": 0.011092429049313068,
+   "nu_rel_err": 0.10924290493130681,
+   "rel_l2_T_qpu": 0.06328095370846308,
+   "rel_l2_T_measured_model": 0.05905164902019295,
+   "rel_l2_T_ideal_circuit": 0.04633896341310839,
    "chains": 9,
-   "fit_rms_calibration": 0.031830099986053254,
+   "fit_rms_calibration": 0.031837362919970275,
    "n_jobs": 111,
-   "time_s": 677.3797187805176
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 841.5524694919586
   },
   {
    "n_qubits": 10,
@@ -166,15 +713,250 @@
    "Tfin": 1.0,
    "nu_true": 0.01,
    "nu_init": 0.43599490214200376,
-   "nu": 0.003798008430749178,
-   "nu_rel_err": 0.6201991569250822,
-   "rel_l2_T_qpu": 0.26266805664501947,
-   "rel_l2_T_measured_model": 0.27091420262955457,
-   "rel_l2_T_ideal_circuit": 0.2586132663809386,
+   "nu": 0.004994104616343975,
+   "nu_rel_err": 0.5005895383656025,
+   "rel_l2_T_qpu": 0.07642092696750022,
+   "rel_l2_T_measured_model": 0.07718994521132352,
+   "rel_l2_T_ideal_circuit": 0.060890040145860407,
    "chains": 9,
-   "fit_rms_calibration": 0.031830099986053254,
+   "fit_rms_calibration": 0.031837362919970275,
    "n_jobs": 111,
-   "time_s": 666.1127145290375
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 868.9626381397247
+  },
+  {
+   "n_qubits": 10,
+   "seed": 3,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.006572422571480274,
+   "nu_rel_err": 0.3427577428519726,
+   "rel_l2_T_qpu": 0.08982853453974593,
+   "rel_l2_T_measured_model": 0.07963557988828932,
+   "rel_l2_T_ideal_circuit": 0.08600887561466124,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1188.5769083499908
+  },
+  {
+   "n_qubits": 10,
+   "seed": 4,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.004940381273627281,
+   "nu_rel_err": 0.5059618726372719,
+   "rel_l2_T_qpu": 0.10261169449821328,
+   "rel_l2_T_measured_model": 0.10219281720465036,
+   "rel_l2_T_ideal_circuit": 0.09948653506951369,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1229.3553092479706
+  },
+  {
+   "n_qubits": 10,
+   "seed": 5,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.008286239579319954,
+   "nu_rel_err": 0.17137604206800464,
+   "rel_l2_T_qpu": 0.06377608899039043,
+   "rel_l2_T_measured_model": 0.06477997804402572,
+   "rel_l2_T_ideal_circuit": 0.06413255546275917,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1234.7019701004028
+  },
+  {
+   "n_qubits": 10,
+   "seed": 6,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.0065341307781636715,
+   "nu_rel_err": 0.34658692218363285,
+   "rel_l2_T_qpu": 0.14512244493206264,
+   "rel_l2_T_measured_model": 0.1433761844195119,
+   "rel_l2_T_ideal_circuit": 0.15252053005509256,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1175.4359838962555
+  },
+  {
+   "n_qubits": 10,
+   "seed": 7,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.002888018498197198,
+   "nu_rel_err": 0.7111981501802802,
+   "rel_l2_T_qpu": 0.10018971807657759,
+   "rel_l2_T_measured_model": 0.10336439860763774,
+   "rel_l2_T_ideal_circuit": 0.09665519801792813,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1156.9947402477264
+  },
+  {
+   "n_qubits": 10,
+   "seed": 8,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.0034438311122357845,
+   "nu_rel_err": 0.6556168887764215,
+   "rel_l2_T_qpu": 0.10465592357735332,
+   "rel_l2_T_measured_model": 0.09625735093004893,
+   "rel_l2_T_ideal_circuit": 0.1017987681239739,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1135.9404983520508
+  },
+  {
+   "n_qubits": 10,
+   "seed": 9,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.00717744417488575,
+   "nu_rel_err": 0.282255582511425,
+   "rel_l2_T_qpu": 0.07754943661054277,
+   "rel_l2_T_measured_model": 0.0750890861661489,
+   "rel_l2_T_ideal_circuit": 0.07401525881091436,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1148.1375274658203
+  },
+  {
+   "n_qubits": 10,
+   "seed": 10,
+   "backend": "fake_berlin",
+   "Tfin": 1.0,
+   "nu_true": 0.01,
+   "nu_init": 0.771320643266746,
+   "nu": 0.004924686625599861,
+   "nu_rel_err": 0.5075313374400139,
+   "rel_l2_T_qpu": 0.1400464751373137,
+   "rel_l2_T_measured_model": 0.14170008961065295,
+   "rel_l2_T_ideal_circuit": 0.15154585894756598,
+   "chains": 9,
+   "fit_rms_calibration": 0.031837362919970275,
+   "n_jobs": 111,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 1150.3709979057312
   }
  ]
 }

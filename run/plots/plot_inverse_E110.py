@@ -4,14 +4,18 @@ Inverser_classical_pinn_E110.py), made only from the files those scripts save --
 For each case folder <case> = T_<T>[_nu_<nu>] in OUT_DIR/quantico/ and OUT_DIR/classico/, every
 figure saved in OUT_DIR:
   * nu_summary_<model>_<case>_E110.png: learned nu vs epoch, one panel per size (qubits or
-    neurons) with all the seeds done, one line per seed (losshist_*.npz);
+    neurons), a thin line per seed and their median (losshist_*.npz);
   * comparacao_classico_quantico_<case>_E110.png (when both models have the case): the run of
-    each model with the smallest nu error, learned nu vs epoch and u(x, T) (validation_*.npz).
+    each model with the smallest nu error, learned nu vs epoch and u(x, T) (validation_*.npz);
+  * antigo_vs_novo_<case>_E110.png (cases with the adjusted training, whose old runs are in
+    <model>/<case>/treino_antigo/): nu error and rel. L2 of u(x, T) of every run, old -> new;
+  * comparacao_classico_quantico_nu_<nu>_E110.png (every case of that nu with both models, one row
+    per T): nu error and rel. L2 of u(x, T) of every run per size, and the median nu vs epoch with
+    its interquartile band, classical vs quantum.
 
 Usage (any env with numpy + matplotlib):
-    python plot_inverse_E110.py                        # every case found in OUT_DIR
-    python plot_inverse_E110.py --tfin 0.1             # only T = 0.1, nu = 0.1
-    python plot_inverse_E110.py --tfin 0.1 --nu 0.01   # only T_0.1_nu_0.01
+    python plot_inverse_E110.py                 # every case found in OUT_DIR
+    python plot_inverse_E110.py --tfin 0.1      # only T = 0.1 (nu = 0.01)
 """
 
 # --- repository layout: src/ and run/ go on the import path, and relative paths
@@ -81,25 +85,33 @@ def style(ax):
 # ----------------------------------------------------------------------
 # nu vs epoch of every run of one model
 # ----------------------------------------------------------------------
+def nu_histories(folder, model, runs):
+    """(runs, epochs) array of learned nu."""
+    size_key, prefix, _ = MODELS[model]
+    return np.array([np.load(os.path.join(folder, f"losshist_{run_tag(r, size_key, prefix)}.npz"))["nu"] for r in runs])
+
+
 def plot_nu_summary(case, model, nu_true):
-    """One panel per size with all the seeds done, one line per seed."""
+    """One panel per size: a thin line per seed and the median over the seeds."""
     folder = os.path.join(OUT_DIR, model, case)
     size_key, prefix, size_label = MODELS[model]
     runs = load_runs(folder, model)
-    seeds = sorted({r["seed"] for r in runs})
-    sizes = sorted(k for k in {r[size_key] for r in runs}
-                   if sum(r[size_key] == k for r in runs) == len(seeds))
+    sizes = sorted({r[size_key] for r in runs})
     if not sizes:
         return
+    color = BLUE if model == "classico" else ORANGE
     fig, axes = plt.subplots(1, len(sizes), figsize=(4.2 * len(sizes), 3.6), sharey=True, squeeze=False)
     for ax, size in zip(axes[0], sizes):
-        for color, s in zip((BLUE, ORANGE, GREEN), seeds):
-            tag = run_tag({size_key: size, "seed": s}, size_key, prefix)
-            nu = np.load(os.path.join(folder, f"losshist_{tag}.npz"))["nu"]
-            ax.plot(np.arange(1, len(nu) + 1), nu, color=color, linewidth=2.0, label=f"seed {s}: nu = {nu[-1]:.4f}")
+        rs = [r for r in runs if r[size_key] == size]
+        nus = nu_histories(folder, model, rs)
+        epochs = np.arange(1, nus.shape[1] + 1)
+        for nu in nus:
+            ax.plot(epochs, nu, color=color, linewidth=0.8, alpha=0.35)
+        ax.plot(epochs, np.median(nus, 0), color=color, linewidth=2.2, label=f"median of {len(rs)} seeds")
         ax.axhline(nu_true, color=INK, linestyle="--", linewidth=1.2, label=f"target {nu_true:g}")
         ax.set_yscale("log")
-        ax.set_title(f"{size} {size_label}", fontsize=12)
+        err = np.median([100 * r["nu_rel_err"] for r in rs])
+        ax.set_title(f"{size} {size_label}: median error of the final nu {err:.1f}%", fontsize=10)
         ax.set_xlabel("Epochs")
         style(ax)
         ax.legend(fontsize=8, frameon=False)
@@ -107,6 +119,63 @@ def plot_nu_summary(case, model, nu_true):
     fig.tight_layout()
     path = os.path.join(OUT_DIR, f"nu_summary_{model}_{case}_E{EPOCHS}.png")
     path = save_figure(fig, path)
+    plt.close(fig)
+    print(f"  {path}")
+
+
+# ----------------------------------------------------------------------
+# Adjusted cases: old (treino_antigo/) vs new training, run by run
+# ----------------------------------------------------------------------
+def run_errors(folder, model):
+    """{(size, seed): (nu error %, rel. L2 of u(x,T))} of the runs of `folder`; u on the QPU for the quantum model."""
+    size_key, prefix, _ = MODELS[model]
+    out = {}
+    for r in load_runs(folder, model):
+        val = np.load(os.path.join(folder, f"validation_{run_tag(r, size_key, prefix)}.npz"))
+        u = val["u_qpu"] if "u_qpu" in val.files else val["u_pred"]
+        out[(r[size_key], r["seed"])] = (100 * r["nu_rel_err"], relative_l2_error(u, val["u_exact"]))
+    return out
+
+
+def plot_old_vs_new(case):
+    """Cases with a treino_antigo/ subfolder: one row per model, nu error and rel. L2 of u(x,T) of every
+    run (size x seed), old training (gray) -> new (model color)."""
+    rows = []
+    for model, color in (("classico", BLUE), ("quantico", ORANGE)):
+        folder = os.path.join(OUT_DIR, model, case)
+        if os.path.isdir(os.path.join(folder, "treino_antigo")):
+            new, old = run_errors(folder, model), run_errors(os.path.join(folder, "treino_antigo"), model)
+            keys = sorted(set(new) & set(old), key=lambda k: (k[1], k[0]))
+            if keys:
+                rows.append((model, color, keys, old, new))
+    if not rows:
+        return
+    fig, axes = plt.subplots(len(rows), 2, figsize=(12, 4.2 * len(rows)), squeeze=False)
+    for (model, color, keys, old, new), (ax_nu, ax_l2) in zip(rows, axes):
+        _, _, size_label = MODELS[model]
+        name = "classical" if model == "classico" else "quantum, fake QPU"
+        for col, ax, unit in ((0, ax_nu, "%"), (1, ax_l2, "")):
+            for i, k in enumerate(keys):
+                y = len(keys) - 1 - i
+                v_old, v_new = old[k][col], new[k][col]
+                ax.plot([v_old, v_new], [y, y], color=INK, alpha=0.25, linewidth=3, zorder=1)
+                ax.scatter([v_old], [y], s=55, color=INK, edgecolors="white", linewidths=1.5, zorder=2)
+                ax.scatter([v_new], [y], s=55, color=color, edgecolors="white", linewidths=1.5, zorder=3)
+            ax.set_yticks(range(len(keys))[::-1], [f"{k[0]} {size_label}, seed {k[1]}" for k in keys], fontsize=8)
+            med_old = np.median([old[k][col] for k in keys])
+            med_new = np.median([new[k][col] for k in keys])
+            fmt = (lambda v: f"{v:.1f}%") if col == 0 else (lambda v: f"{v:.3f}")
+            what = "error of the learned nu (%)" if col == 0 else "rel. L2 of u(x, T)"
+            ax.set_title(f"{name}: {what}, median {fmt(med_old)} -> {fmt(med_new)}", fontsize=10)
+            ax.set_xlim(left=0)
+            style(ax)
+        ax_nu.set_xlabel("relative error of nu (%)")
+        ax_l2.set_xlabel("relative L2 error of u(x, T)")
+        handles = [plt.Line2D([], [], marker="o", linestyle="", color=INK, label="old training"),
+                   plt.Line2D([], [], marker="o", linestyle="", color=color, label="new training (adjusted)")]
+        ax_l2.legend(handles=handles, frameon=False, fontsize=8, loc="lower right")
+    fig.tight_layout()
+    path = save_figure(fig, os.path.join(OUT_DIR, f"antigo_vs_novo_{case}_E{EPOCHS}.png"))
     plt.close(fig)
     print(f"  {path}")
 
@@ -162,10 +231,85 @@ def plot_comparison(case, tfin, nu_true):
     print(f"    best quantum:   {label_q}, rel. L2 of u(x,T) {l2_q:.2e}")
 
 
+# ----------------------------------------------------------------------
+# Final comparison: every run of both models, one row per final time
+# ----------------------------------------------------------------------
+def run_metrics(folder, model):
+    """runs of `folder` with "err" (nu error %) and "l2" (rel. L2 of u(x,T); on the QPU for the quantum model)."""
+    size_key, prefix, _ = MODELS[model]
+    runs = load_runs(folder, model)
+    for r in runs:
+        val = np.load(os.path.join(folder, f"validation_{run_tag(r, size_key, prefix)}.npz"))
+        u = val["u_qpu"] if "u_qpu" in val.files else val["u_pred"]
+        r["err"], r["l2"], r["size"] = 100 * r["nu_rel_err"], relative_l2_error(u, val["u_exact"]), r[size_key]
+    return runs
+
+
+def strip(ax, x, values, color):
+    """Jittered points of one group and its median as a short bar."""
+    rng = np.random.default_rng(int(1000 * (x + 1)))
+    ax.scatter(x + rng.uniform(-0.12, 0.12, len(values)), values, s=16, color=color, alpha=0.55, linewidths=0, zorder=2)
+    ax.plot([x - 0.17, x + 0.17], [np.median(values)] * 2, color=color, linewidth=3, solid_capstyle="round", zorder=3)
+
+
+def plot_final_comparison(nu_true):
+    """One row per case of this nu with both models: (a) nu error per size, (b) median nu vs epoch with
+    the interquartile band, (c) rel. L2 of u(x, T) per size -- classical (blue) vs quantum (orange)."""
+    tag = f"_nu_{nu_true:g}"
+    cases = sorted(c for c in {os.path.basename(os.path.dirname(p))
+                               for p in glob.glob(os.path.join(OUT_DIR, "*", "T_*", "summary.json"))}
+                   if c.endswith(tag) and all(os.path.isdir(os.path.join(OUT_DIR, m, c)) for m in MODELS))
+    if not cases:
+        return
+    models = (("classico", "classical", BLUE, -0.2), ("quantico", "quantum, fake QPU", ORANGE, 0.2))
+    fig, axes = plt.subplots(len(cases), 3, figsize=(15, 4.3 * len(cases)), squeeze=False,
+                             gridspec_kw=dict(width_ratios=(1, 1.25, 1)))
+    print(f"  {'case':16s} {'model':10s} {'runs':>4s} {'nu err median/mean/p90':>24s} {'L2 median':>9s}   per size (median nu err)")
+    for case, (ax_e, ax_nu, ax_l2) in zip(cases, axes):
+        tfin = case.split("_")[1]
+        for model, name, color, dx in models:
+            folder = os.path.join(OUT_DIR, model, case)
+            runs = run_metrics(folder, model)
+            sizes = sorted({r["size"] for r in runs})
+            for i, size in enumerate(sizes):
+                strip(ax_e, i + dx, [r["err"] for r in runs if r["size"] == size], color)
+                strip(ax_l2, i + dx, [r["l2"] for r in runs if r["size"] == size], color)
+            nus = nu_histories(folder, model, runs)
+            epochs = np.arange(1, nus.shape[1] + 1)
+            q1, med, q3 = np.percentile(nus, [25, 50, 75], axis=0)
+            ax_nu.fill_between(epochs, q1, q3, color=color, alpha=0.18, linewidth=0)
+            e = np.array([r["err"] for r in runs])
+            ax_nu.plot(epochs, med, color=color, linewidth=2.0, label=f"{name}: {len(runs)} runs, final nu error median {np.median(e):.1f}%")
+            per_size = "  ".join(f"{s}: {np.median([r['err'] for r in runs if r['size'] == s]):.1f}%" for s in sizes)
+            print(f"  {case:16s} {model:10s} {len(runs):4d} {np.median(e):8.1f} / {e.mean():5.1f} / {np.percentile(e, 90):5.1f} "
+                  f"{np.median([r['l2'] for r in runs]):9.3f}   {per_size}")
+        for ax, what in ((ax_e, "relative error of the learned nu (%)"), (ax_l2, "rel. L2 error of u(x, T)")):
+            ax.set_xticks(range(len(sizes)), [f"{s}" for s in sizes])
+            ax.set_xlabel("size (neurons / qubits)")
+            ax.set_ylabel(what)
+            ax.set_ylim(bottom=0)
+        ax_e.set_title(f"T = {tfin}: error of nu per run (bar = median)", fontsize=10)
+        ax_l2.set_title(f"T = {tfin}: error of u(x, T) per run", fontsize=10)
+        ax_nu.axhline(nu_true, color=INK, linestyle="--", linewidth=1.2, label=f"target {nu_true:g}")
+        ax_nu.set_yscale("log")
+        ax_nu.set_xlabel("Epochs")
+        ax_nu.set_ylabel("learned nu")
+        ax_nu.set_title(f"T = {tfin}: median learned nu, band = quartiles over the runs", fontsize=10)
+        ax_nu.legend(fontsize=8, frameon=False, loc="upper right")
+        for ax in (ax_e, ax_nu, ax_l2):
+            style(ax)
+    handles = [plt.Line2D([], [], marker="o", linestyle="", markersize=7, color=c, label=n) for _, n, c, _ in models]
+    fig.legend(handles=handles, loc="lower center", ncol=2, frameon=False, fontsize=10)
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    path = save_figure(fig, os.path.join(OUT_DIR, f"comparacao_classico_quantico{tag}_E{EPOCHS}.png"))
+    plt.close(fig)
+    print(f"  {path}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--tfin", type=float, help="só o caso com tempo final T (padrão: todos os casos)")
-    parser.add_argument("--nu", type=float, default=0.1, help="viscosidade verdadeira do caso (com --tfin; padrão 0.1)")
+    parser.add_argument("--nu", type=float, default=0.01, help="viscosidade verdadeira do caso (padrão 0.01)")
     args = parser.parse_args()
 
     if args.tfin is not None:
@@ -181,8 +325,10 @@ if __name__ == "__main__":
             if os.path.exists(path) and load_runs(os.path.dirname(path), model):
                 summaries[model] = json.load(open(path))
                 plot_nu_summary(case, model, summaries[model]["nu_true"])
+        plot_old_vs_new(case)
         if not summaries:
             print("  sem resultados")
         elif len(summaries) == len(MODELS):
             s = summaries["classico"]
             plot_comparison(case, s["Tfin"], s["nu_true"])
+    plot_final_comparison(args.nu)

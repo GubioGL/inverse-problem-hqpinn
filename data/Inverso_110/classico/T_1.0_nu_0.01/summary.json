@@ -11,97 +11,688 @@
   "r_ramp": 10,
   "w_d": 37.8,
   "lr_nu": 0.5,
-  "lr_nu_min": 0.163
+  "lr_nu_min": 0.163,
+  "inner_steps": 16
+ },
+ "adjustments": {
+  "hard_ic": false,
+  "n_ic": 10,
+  "w_ic": 10.0,
+  "warmup": 10,
+  "plateau": {
+   "patience": 5,
+   "factor": 1.5,
+   "threshold": 0.01
+  }
  },
  "nu_true": 0.01,
  "Tfin": 1.0,
  "n_collocation": 10,
  "epochs": 110,
  "data": "exact solution at the collocation points",
- "nu_rel_err_median": 0.4395524263381958,
- "nu_rel_err_mean": 0.404969175449676,
- "nu_rel_err_max": 0.6237738523632288,
+ "nu_rel_err_median": 0.21507118269801143,
+ "nu_rel_err_mean": 0.23061414000888666,
+ "nu_rel_err_max": 0.6849798131734133,
  "runs": [
   {
    "neurons": 3,
    "seed": 0,
    "nu_init": 0.5488135039273248,
-   "nu": 0.012775242328643799,
-   "nu_rel_err": 0.2775242328643799,
-   "rel_l2_T": 0.7424135752548127,
-   "time_s": 1.9511644840240479
+   "nu": 0.01266893558204174,
+   "nu_rel_err": 0.26689355820417404,
+   "rel_l2_T": 0.07952196331812343,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 12.001307010650635
   },
   {
    "neurons": 3,
    "seed": 1,
    "nu_init": 0.417022004702574,
-   "nu": 0.010500818490982056,
-   "nu_rel_err": 0.050081849098205546,
-   "rel_l2_T": 0.6019294738236595,
-   "time_s": 0.22828984260559082
+   "nu": 0.010809984058141708,
+   "nu_rel_err": 0.08099840581417081,
+   "rel_l2_T": 0.0740428631408457,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 5.411447048187256
   },
   {
    "neurons": 3,
    "seed": 2,
    "nu_init": 0.43599490214200376,
-   "nu": 0.003762261476367712,
-   "nu_rel_err": 0.6237738523632288,
-   "rel_l2_T": 0.6236535146207658,
-   "time_s": 0.22792482376098633
+   "nu": 0.010156124830245972,
+   "nu_rel_err": 0.015612483024597147,
+   "rel_l2_T": 0.06678109108541581,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 7.299041986465454
+  },
+  {
+   "neurons": 3,
+   "seed": 3,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.00828893855214119,
+   "nu_rel_err": 0.17110614478588107,
+   "rel_l2_T": 0.07623668727827339,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 7.34944224357605
+  },
+  {
+   "neurons": 3,
+   "seed": 4,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.006972222123295069,
+   "nu_rel_err": 0.3027777876704931,
+   "rel_l2_T": 0.09497259734655396,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.0366015434265137
+  },
+  {
+   "neurons": 3,
+   "seed": 5,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.011434950865805149,
+   "nu_rel_err": 0.14349508658051488,
+   "rel_l2_T": 0.04011153342753449,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.854689121246338
+  },
+  {
+   "neurons": 3,
+   "seed": 6,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.007893739268183708,
+   "nu_rel_err": 0.2106260731816292,
+   "rel_l2_T": 0.059906969734098266,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 8.097334623336792
+  },
+  {
+   "neurons": 3,
+   "seed": 7,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.006960469763725996,
+   "nu_rel_err": 0.3039530236274004,
+   "rel_l2_T": 0.07187643306118167,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.5758516788482666
+  },
+  {
+   "neurons": 3,
+   "seed": 8,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.005687871016561985,
+   "nu_rel_err": 0.4312128983438015,
+   "rel_l2_T": 0.07469062662336616,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.4661061763763428
+  },
+  {
+   "neurons": 3,
+   "seed": 9,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.008950124494731426,
+   "nu_rel_err": 0.10498755052685739,
+   "rel_l2_T": 0.07470340803450266,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.6774513721466064
+  },
+  {
+   "neurons": 3,
+   "seed": 10,
+   "nu_init": 0.771320643266746,
+   "nu": 0.008965968154370785,
+   "nu_rel_err": 0.10340318456292154,
+   "rel_l2_T": 0.04584833751645584,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.3759641647338867
   },
   {
    "neurons": 7,
    "seed": 0,
    "nu_init": 0.5488135039273248,
-   "nu": 0.004805862437933683,
-   "nu_rel_err": 0.5194137562066317,
-   "rel_l2_T": 0.7852834747368284,
-   "time_s": 0.2335209846496582
+   "nu": 0.011010337620973587,
+   "nu_rel_err": 0.10103376209735868,
+   "rel_l2_T": 0.07875080209537812,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.2459640502929688
   },
   {
    "neurons": 7,
    "seed": 1,
    "nu_init": 0.417022004702574,
-   "nu": 0.005126548931002617,
-   "nu_rel_err": 0.4873451068997383,
-   "rel_l2_T": 0.755068974978077,
-   "time_s": 0.23280787467956543
+   "nu": 0.012859002687036991,
+   "nu_rel_err": 0.2859002687036991,
+   "rel_l2_T": 0.06685952570228192,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.653130292892456
   },
   {
    "neurons": 7,
    "seed": 2,
    "nu_init": 0.43599490214200376,
-   "nu": 0.005604475736618042,
-   "nu_rel_err": 0.4395524263381958,
-   "rel_l2_T": 0.7077661669566995,
-   "time_s": 0.21605682373046875
+   "nu": 0.010246401652693748,
+   "nu_rel_err": 0.024640165269374827,
+   "rel_l2_T": 0.07868480217961654,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 4.178469896316528
+  },
+  {
+   "neurons": 7,
+   "seed": 3,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.00551191670820117,
+   "nu_rel_err": 0.448808329179883,
+   "rel_l2_T": 0.0759564619753194,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.622209310531616
+  },
+  {
+   "neurons": 7,
+   "seed": 4,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.006935714278370142,
+   "nu_rel_err": 0.3064285721629858,
+   "rel_l2_T": 0.08295115163792155,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 5.242197513580322
+  },
+  {
+   "neurons": 7,
+   "seed": 5,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.00957957748323679,
+   "nu_rel_err": 0.04204225167632105,
+   "rel_l2_T": 0.08014494425852388,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 6.556646108627319
+  },
+  {
+   "neurons": 7,
+   "seed": 6,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.007246431894600391,
+   "nu_rel_err": 0.27535681053996086,
+   "rel_l2_T": 0.055168051825556376,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.4512035846710205
+  },
+  {
+   "neurons": 7,
+   "seed": 7,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.0031502018682658672,
+   "nu_rel_err": 0.6849798131734133,
+   "rel_l2_T": 0.07288117061828848,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.545351982116699
+  },
+  {
+   "neurons": 7,
+   "seed": 8,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.008826656267046928,
+   "nu_rel_err": 0.11733437329530717,
+   "rel_l2_T": 0.07706197518212737,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.4631574153900146
+  },
+  {
+   "neurons": 7,
+   "seed": 9,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.0071531073190271854,
+   "nu_rel_err": 0.28468926809728146,
+   "rel_l2_T": 0.07446905939366816,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.5001206398010254
+  },
+  {
+   "neurons": 7,
+   "seed": 10,
+   "nu_init": 0.771320643266746,
+   "nu": 0.005058168433606625,
+   "nu_rel_err": 0.49418315663933754,
+   "rel_l2_T": 0.05670430638944955,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 8.220293998718262
   },
   {
    "neurons": 10,
    "seed": 0,
    "nu_init": 0.5488135039273248,
-   "nu": 0.006120200734585524,
-   "nu_rel_err": 0.38797992654144764,
-   "rel_l2_T": 0.4983292301891125,
-   "time_s": 0.21934270858764648
+   "nu": 0.012632223777472973,
+   "nu_rel_err": 0.2632223777472973,
+   "rel_l2_T": 0.06484094312540087,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 7.971918344497681
   },
   {
    "neurons": 10,
    "seed": 1,
    "nu_init": 0.417022004702574,
-   "nu": 0.006577761843800545,
-   "nu_rel_err": 0.3422238156199455,
-   "rel_l2_T": 0.7382293920643404,
-   "time_s": 0.22066187858581543
+   "nu": 0.010421724058687687,
+   "nu_rel_err": 0.04217240586876867,
+   "rel_l2_T": 0.07029808099045626,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 7.790330171585083
   },
   {
    "neurons": 10,
    "seed": 2,
    "nu_init": 0.43599490214200376,
-   "nu": 0.004831723868846893,
-   "nu_rel_err": 0.5168276131153107,
-   "rel_l2_T": 0.8649355332160482,
-   "time_s": 0.23424792289733887
+   "nu": 0.008076761849224567,
+   "nu_rel_err": 0.1923238150775433,
+   "rel_l2_T": 0.05582862359821484,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.4631435871124268
+  },
+  {
+   "neurons": 10,
+   "seed": 3,
+   "nu_init": 0.5507979025745755,
+   "nu": 0.010302920825779438,
+   "nu_rel_err": 0.03029208257794378,
+   "rel_l2_T": 0.07735795144530659,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.9677820205688477
+  },
+  {
+   "neurons": 10,
+   "seed": 4,
+   "nu_init": 0.9670298390136767,
+   "nu": 0.007849288173019886,
+   "nu_rel_err": 0.21507118269801143,
+   "rel_l2_T": 0.09400987422526966,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 2.42724871635437
+  },
+  {
+   "neurons": 10,
+   "seed": 5,
+   "nu_init": 0.22199317108973948,
+   "nu": 0.007801752537488937,
+   "nu_rel_err": 0.2198247462511063,
+   "rel_l2_T": 0.056047667045563916,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 4.815884113311768
+  },
+  {
+   "neurons": 10,
+   "seed": 6,
+   "nu_init": 0.8928601514360016,
+   "nu": 0.005664675030857325,
+   "nu_rel_err": 0.43353249691426754,
+   "rel_l2_T": 0.06421201163117664,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 4.755168914794922
+  },
+  {
+   "neurons": 10,
+   "seed": 7,
+   "nu_init": 0.07630828937395717,
+   "nu": 0.008221814408898354,
+   "nu_rel_err": 0.17781855911016467,
+   "rel_l2_T": 0.09809023528909148,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.5236687660217285
+  },
+  {
+   "neurons": 10,
+   "seed": 8,
+   "nu_init": 0.8734294027918162,
+   "nu": 0.009079515002667904,
+   "nu_rel_err": 0.09204849973320962,
+   "rel_l2_T": 0.06539528944923655,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.658606767654419
+  },
+  {
+   "neurons": 10,
+   "seed": 9,
+   "nu_init": 0.010374153885699955,
+   "nu": 0.007032909896224737,
+   "nu_rel_err": 0.2967090103775263,
+   "rel_l2_T": 0.07349089716627456,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 3.5967910289764404
+  },
+  {
+   "neurons": 10,
+   "seed": 10,
+   "nu_init": 0.771320643266746,
+   "nu": 0.0055321152321994305,
+   "nu_rel_err": 0.44678847678005695,
+   "rel_l2_T": 0.07089835889995526,
+   "adjustments": {
+    "hard_ic": false,
+    "n_ic": 10,
+    "w_ic": 10.0,
+    "warmup": 10,
+    "plateau": {
+     "patience": 5,
+     "factor": 1.5,
+     "threshold": 0.01
+    }
+   },
+   "time_s": 4.792407512664795
   }
  ]
 }

@@ -258,6 +258,7 @@ class QuantumExactInversePINN(nn.Module):
         )
         self.post = mlp(n_qubits, post_neurons, post_depth, 1)
         self.learnable_parameter = nn.Parameter(tc.tensor(float(nu_init)))
+        self.hard_ic = True   # False: u = network output, the IC enters only through the loss
 
     def forward(self, xt):
         x, t = xt[:, 0:1], xt[:, 1:2]
@@ -268,6 +269,8 @@ class QuantumExactInversePINN(nn.Module):
         angles = self.angle_scale * tc.tanh(self.pre(features))
         q = self.quantum(angles).to(dtype=self.post[0].weight.dtype)
         out = self.post(q)
+        if not self.hard_ic:
+            return out
         return initial_condition(x, L=self.L) + (t / self.Tfin) * out  # hard-constrains u(x,0)=u0(x)
 
     def save(self, path, training_params=None):
